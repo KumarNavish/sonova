@@ -78,6 +78,18 @@ const state = {
   abAnchorSec: 1.0,
 };
 
+function ensureRequiredElements() {
+  const missing = Object.entries(els)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+  if (!missing.length) {
+    return;
+  }
+  throw new Error(
+    `UI assets out of sync (missing: ${missing.join(", ")}). Hard refresh the page (Cmd/Ctrl+Shift+R).`,
+  );
+}
+
 function fmt(value, decimals = 3) {
   return Number(value).toFixed(decimals);
 }
@@ -651,6 +663,7 @@ function wireEvents() {
 
 async function init() {
   try {
+    ensureRequiredElements();
     await loadBundle();
 
     const sceneIds = new Set(state.bundle.scenes.map((s) => s.id));

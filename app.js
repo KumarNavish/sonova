@@ -8,37 +8,56 @@ const FEATURE_COLUMNS = [
 
 const FEATURE_LABELS = {
   intelligibility: "Word clarity",
-  noise_control: "Background reduction",
-  comfort: "Listening comfort",
-  loudness_stability: "Volume steadiness",
-  speech_prominence: "Speech-in-front focus",
+  noise_control: "Noise control",
+  comfort: "Comfort",
+  loudness_stability: "Loudness stability",
+  speech_prominence: "Speech focus",
 };
 
-const DEFAULT_GOAL = "Balanced everyday listening";
+const DEFAULT_GOAL = "Hear speech clearly in noise";
+const DEFAULT_SCENE = "crowd_social";
+const AB_TOGGLE_MS = 1150;
 
 const els = {
-  sceneSelect: document.getElementById("scene-select"),
+  heroSceneLabel: document.getElementById("hero-scene-label"),
+  demoCompareBtn: document.getElementById("demo-compare-btn"),
+
+  scenePills: document.getElementById("scene-pills"),
+  sceneOverview: document.getElementById("scene-overview"),
+
   goalSelect: document.getElementById("goal-select"),
   applyGoalBtn: document.getElementById("apply-goal-btn"),
-  runBtn: document.getElementById("run-btn"),
   goalCoach: document.getElementById("goal-coach"),
-  sceneOverview: document.getElementById("scene-overview"),
+
   clarity: document.getElementById("clarity-slider"),
   noise: document.getElementById("noise-slider"),
   comfort: document.getElementById("comfort-slider"),
   clarityValue: document.getElementById("clarity-value"),
   noiseValue: document.getElementById("noise-value"),
   comfortValue: document.getElementById("comfort-value"),
+
+  runBtn: document.getElementById("run-btn"),
+
+  compareCaption: document.getElementById("compare-caption"),
   beforeAudio: document.getElementById("before-audio"),
   afterAudio: document.getElementById("after-audio"),
+  noiseAudio: document.getElementById("noise-audio"),
+  playBeforeBtn: document.getElementById("play-before-btn"),
+  playAfterBtn: document.getElementById("play-after-btn"),
+  playABBtn: document.getElementById("play-ab-btn"),
+  stopBtn: document.getElementById("stop-btn"),
+  nowPlayingBadge: document.getElementById("now-playing-badge"),
+  abHint: document.getElementById("ab-hint"),
+
+  impactNoise: document.getElementById("impact-noise"),
+  impactSpeech: document.getElementById("impact-speech"),
+  impactHarshness: document.getElementById("impact-harshness"),
+  impactFocus: document.getElementById("impact-focus"),
+
   winnerCard: document.getElementById("winner-card"),
   confidenceCard: document.getElementById("confidence-card"),
-  impactCard: document.getElementById("impact-card"),
-  actionCard: document.getElementById("action-card"),
   scoreTable: document.getElementById("score-table"),
-  buildPlanBtn: document.getElementById("build-plan-btn"),
-  planSummary: document.getElementById("plan-summary"),
-  planTable: document.getElementById("plan-table"),
+
   feedbackSceneSelect: document.getElementById("feedback-scene-select"),
   feedbackProfileSelect: document.getElementById("feedback-profile-select"),
   applyFeedbackBtn: document.getElementById("apply-feedback-btn"),
@@ -50,13 +69,22 @@ const els = {
 
 const state = {
   bundle: null,
-  featuresByScene: {},
   sceneMap: {},
   profileMap: {},
+  featuresByScene: {},
+  selectedSceneId: null,
+  lastWeightsCfg: null,
+  abTimer: null,
+  abNext: "before",
 };
 
 function fmt(value, decimals = 3) {
   return Number(value).toFixed(decimals);
+}
+
+function fmtSigned(value, decimals = 1) {
+  const v = Number(value);
+  return `${v >= 0 ? "+" : ""}${v.toFixed(decimals)}`;
 }
 
 function clone(obj) {
@@ -109,9 +137,9 @@ function computeScore(featureRow, weights) {
   let score = 0;
   for (const feature of FEATURE_COLUMNS) {
     const value = Number(featureRow[feature]);
-    const contrib = Number(weights[feature]) * value;
-    contributions[feature] = contrib;
-    score += contrib;
+    const c = Number(weights[feature]) * value;
+    contributions[feature] = c;
+    score += c;
   }
   return { score, contributions };
 }
@@ -134,8 +162,8 @@ function scoreScene(sceneId, weightsCfg) {
   });
 
   scored.sort((a, b) => b.score - a.score);
-  scored.forEach((row, index) => {
-    row.rank = index + 1;
+  scored.forEach((row, i) => {
+    row.rank = i + 1;
   });
   return { scored, weights };
 }
@@ -149,55 +177,20 @@ function scoreAllScenes(weightsCfg) {
 }
 
 function decisionConfidence(margin) {
-  const pct = Math.max(55, Math.min(96, Math.round(56 + 700 * margin)));
+  const pct = Math.max(55, Math.min(97, Math.round(56 + 720 * margin)));
   if (margin >= 0.045) {
     return { level: "High", pct };
   }
   if (margin >= 0.02) {
     return { level: "Moderate", pct };
   }
-  return { level: "Watch-and-listen", pct };
+  return { level: "Needs listening check", pct };
 }
 
 function topContributions(contributions, topK = 2) {
   return Object.entries(contributions)
     .sort((a, b) => b[1] - a[1])
     .slice(0, topK);
-}
-
-function sceneTip(sceneId) {
-  const tips = {
-    quiet_conversation: "Best for calm one-to-one speech; focus on naturalness and comfort.",
-    cafe_restaurant: "Best for hearing your table partner over competing voices.",
-    traffic_street: "Best for outdoor speech with noise under control.",
-    meeting_room: "Best for meetings where typing and side noise mask words.",
-    tv_media_listening: "Best for TV dialog clarity at comfortable loudness.",
-    crowd_social: "Best for focusing on the speaker in front of you.",
-  };
-  return tips[sceneId] || "Pick the nearest real-world context.";
-}
-
-function renderSceneOverview(scene) {
-  els.sceneOverview.innerHTML = `
-    <h3>${scene.label}</h3>
-    <p>${scene.description}</p>
-    <p><b>Real-life tip:</b> ${sceneTip(scene.id)}</p>
-  `;
-}
-
-function renderGoalCoach(goalLabel) {
-  const preset = state.bundle.goal_presets[goalLabel];
-  els.goalCoach.innerHTML = `
-    <h3>AI Goal Coach</h3>
-    <p><b>${goalLabel}</b></p>
-    <p>${preset.coach_text}</p>
-  `;
-}
-
-function updateSliderLabels() {
-  els.clarityValue.textContent = String(els.clarity.value);
-  els.noiseValue.textContent = String(els.noise.value);
-  els.comfortValue.textContent = String(els.comfort.value);
 }
 
 function tableHtml(columns, rows) {
@@ -211,121 +204,258 @@ function tableHtml(columns, rows) {
   return `<thead>${head}</thead><tbody>${body}</tbody>`;
 }
 
+function updateSliderLabels() {
+  els.clarityValue.textContent = String(els.clarity.value);
+  els.noiseValue.textContent = String(els.noise.value);
+  els.comfortValue.textContent = String(els.comfort.value);
+}
+
+function renderScenePills() {
+  els.scenePills.innerHTML = "";
+  for (const scene of state.bundle.scenes) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `pill${scene.id === state.selectedSceneId ? " is-active" : ""}`;
+    btn.textContent = scene.label;
+    btn.addEventListener("click", () => {
+      if (state.selectedSceneId === scene.id) {
+        return;
+      }
+      state.selectedSceneId = scene.id;
+      renderScenePills();
+      renderSceneInfo();
+      runConcierge();
+    });
+    els.scenePills.appendChild(btn);
+  }
+}
+
+function renderSceneInfo() {
+  const scene = state.sceneMap[state.selectedSceneId];
+  els.sceneOverview.innerHTML = `
+    <h3>${scene.label}</h3>
+    <p>${scene.description}</p>
+    <p class="muted">Input clip length: ${fmt(state.bundle.clip_duration_sec, 1)}s · Public voice/noise sources only.</p>
+  `;
+  els.heroSceneLabel.textContent = `Scene: ${scene.label}`;
+}
+
+function renderGoalCoach(goalLabel) {
+  const preset = state.bundle.goal_presets[goalLabel];
+  els.goalCoach.innerHTML = `
+    <h3>Current intent</h3>
+    <p><b>${goalLabel}</b></p>
+    <p>${preset.coach_text}</p>
+  `;
+}
+
+function applyGoalPreset() {
+  const goal = els.goalSelect.value;
+  const preset = state.bundle.goal_presets[goal] || state.bundle.goal_presets[DEFAULT_GOAL];
+  els.clarity.value = String(preset.clarity);
+  els.noise.value = String(preset.noise);
+  els.comfort.value = String(preset.comfort);
+  updateSliderLabels();
+  renderGoalCoach(goal);
+}
+
+function setBadge(text, tone = "neutral") {
+  const toneClass = tone === "good" ? " good" : tone === "warn" ? " warn" : "";
+  els.nowPlayingBadge.className = `badge${toneClass}`;
+  els.nowPlayingBadge.textContent = text;
+}
+
+function stopAudio() {
+  if (state.abTimer) {
+    clearInterval(state.abTimer);
+    state.abTimer = null;
+  }
+  for (const el of [els.beforeAudio, els.afterAudio, els.noiseAudio]) {
+    el.pause();
+  }
+  setBadge("Idle", "neutral");
+}
+
+function currentSyncTime() {
+  if (!els.beforeAudio.paused) {
+    return els.beforeAudio.currentTime;
+  }
+  if (!els.afterAudio.paused) {
+    return els.afterAudio.currentTime;
+  }
+  return Math.max(els.beforeAudio.currentTime || 0, els.afterAudio.currentTime || 0);
+}
+
+async function playSingle(which) {
+  stopAudio();
+  const t = currentSyncTime();
+  const src = which === "before" ? els.beforeAudio : which === "after" ? els.afterAudio : els.noiseAudio;
+  if (which !== "noise") {
+    const other = which === "before" ? els.afterAudio : els.beforeAudio;
+    other.pause();
+    try {
+      src.currentTime = Math.min(t, Math.max(0, (src.duration || t + 0.1) - 0.05));
+    } catch {
+      src.currentTime = 0;
+    }
+  }
+  try {
+    await src.play();
+  } catch {
+    return;
+  }
+  if (which === "before") {
+    setBadge("Playing: raw input", "warn");
+  } else if (which === "after") {
+    setBadge("Playing: AI enhanced", "good");
+  } else {
+    setBadge("Playing: scene background bed", "neutral");
+  }
+}
+
+function toggleABStep() {
+  const playBefore = state.abNext === "before";
+  const src = playBefore ? els.beforeAudio : els.afterAudio;
+  const other = playBefore ? els.afterAudio : els.beforeAudio;
+
+  const t = currentSyncTime();
+  other.pause();
+  try {
+    src.currentTime = Math.min(t, Math.max(0, (src.duration || t + 0.1) - 0.05));
+  } catch {
+    src.currentTime = 0;
+  }
+
+  src.play().catch(() => {
+    stopAudio();
+  });
+
+  setBadge(playBefore ? "A/B: raw" : "A/B: AI enhanced", playBefore ? "warn" : "good");
+  state.abNext = playBefore ? "after" : "before";
+}
+
+function startABTurbo() {
+  stopAudio();
+  state.abNext = "before";
+  toggleABStep();
+  state.abTimer = setInterval(toggleABStep, AB_TOGGLE_MS);
+}
+
+function renderImpactCard(el, title, valueText, hint, tone = "good") {
+  el.className = `impact-card ${tone}`;
+  el.innerHTML = `
+    <h3>${title}</h3>
+    <p class="value">${valueText}</p>
+    <p class="hint">${hint}</p>
+  `;
+}
+
+function renderImpactMetrics(sceneId, winnerProfileId) {
+  const byScene = state.bundle.audio_metrics?.[sceneId] || {};
+  const metrics = byScene[winnerProfileId] || {
+    noise_floor_drop_db: 0,
+    speech_band_shift_db: 0,
+    harshness_reduction_db: 0,
+    speech_focus_delta_pct: 0,
+  };
+
+  renderImpactCard(
+    els.impactNoise,
+    "Background floor",
+    `${fmtSigned(metrics.noise_floor_drop_db, 1)} dB`,
+    "Positive means quieter low-level background after AI.",
+    metrics.noise_floor_drop_db >= 0 ? "good" : "warn",
+  );
+
+  renderImpactCard(
+    els.impactSpeech,
+    "Speech band",
+    `${fmtSigned(metrics.speech_band_shift_db, 1)} dB`,
+    "Energy shift in the critical 1-3.6 kHz speech region.",
+    metrics.speech_band_shift_db >= 0 ? "good" : "warn",
+  );
+
+  renderImpactCard(
+    els.impactHarshness,
+    "Harshness",
+    `${fmtSigned(metrics.harshness_reduction_db, 1)} dB`,
+    "Positive means less high-frequency sharpness.",
+    metrics.harshness_reduction_db >= 0 ? "good" : "warn",
+  );
+
+  renderImpactCard(
+    els.impactFocus,
+    "Speech focus",
+    `${fmtSigned(metrics.speech_focus_delta_pct, 1)} pts`,
+    "Share of speech-like energy compared with full-band energy.",
+    metrics.speech_focus_delta_pct >= 0 ? "good" : "warn",
+  );
+}
+
 function renderScoreTable(scored) {
   const columns = [
     { label: "Rank", render: (r) => r.rank },
     { label: "Profile", render: (r) => r.profile_name },
-    { label: "Score", render: (r) => fmt(r.score) },
-    ...FEATURE_COLUMNS.map((feature) => ({
-      label: FEATURE_LABELS[feature],
-      render: (r) => fmt(r[feature]),
+    { label: "Utility", render: (r) => fmt(r.score) },
+    ...FEATURE_COLUMNS.map((f) => ({
+      label: FEATURE_LABELS[f],
+      render: (r) => fmt(r[f]),
     })),
   ];
   els.scoreTable.innerHTML = tableHtml(columns, scored);
 }
 
 function runConcierge() {
-  const sceneId = els.sceneSelect.value;
+  const scene = state.sceneMap[state.selectedSceneId];
   const goalLabel = els.goalSelect.value;
   const clarity = Number(els.clarity.value);
   const noise = Number(els.noise.value);
   const comfort = Number(els.comfort.value);
 
   const weightsCfg = personalizedWeightsConfig(clarity, noise, comfort);
-  const { scored, weights } = scoreScene(sceneId, weightsCfg);
-  const scene = state.sceneMap[sceneId];
+  const { scored, weights } = scoreScene(scene.id, weightsCfg);
   const winner = scored[0];
   const runner = scored[1];
   const margin = winner.score - runner.score;
   const conf = decisionConfidence(margin);
+
   const top = topContributions(winner.contributions, 2)
-    .map(([feature, value]) => `${FEATURE_LABELS[feature]} (${fmt(value)})`)
-    .join(", ");
+    .map(([f]) => FEATURE_LABELS[f])
+    .join(" + ");
 
   const weightFocus = Object.entries(weights)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
-    .map(([feature, value]) => `${FEATURE_LABELS[feature]} (${fmt(value, 2)})`)
+    .map(([f, w]) => `${FEATURE_LABELS[f]} (${fmt(w, 2)})`)
     .join(", ");
 
-  const baseline = scored.find((r) => r.profile_id === "balanced_default") || runner;
-  const deltas = FEATURE_COLUMNS.map((feature) => ({
-    feature,
-    delta: winner[feature] - baseline[feature],
-  })).sort((a, b) => b.delta - a.delta);
-
-  const topDelta = deltas.slice(0, 2)
-    .map((d) => `<li>${FEATURE_LABELS[d.feature]}: ${d.delta >= 0 ? "+" : ""}${fmt(d.delta)}</li>`)
-    .join("");
-  const worstDelta = deltas[deltas.length - 1];
-
+  stopAudio();
   els.beforeAudio.src = scene.audio.noisy;
   els.afterAudio.src = winner.audio_path;
+  els.noiseAudio.src = scene.audio.noise_bed;
+
+  els.compareCaption.textContent = `In ${scene.label}, AI selected ${winner.profile_name}. Use A/B turbo to hear the same moment switching between raw and enhanced audio.`;
 
   els.winnerCard.innerHTML = `
-    <h3>AI Concierge Pick: ${winner.profile_name}</h3>
+    <h3>AI Pick: ${winner.profile_name}</h3>
+    <p>${winner.profile_description}</p>
     <p><b>Scene:</b> ${scene.label}</p>
-    <p><b>Goal:</b> ${goalLabel}</p>
-    <p><b>Why it won:</b> ${top}</p>
-    <p><b>AI focus:</b> ${weightFocus}</p>
-    <p><b>Backup mode:</b> ${runner.profile_name}</p>
+    <p><b>Top evidence:</b> ${top}</p>
+    <p><b>Scene weight focus:</b> ${weightFocus}</p>
   `;
 
   els.confidenceCard.innerHTML = `
     <h3>Decision confidence</h3>
-    <p><span class="tag">${conf.level} (${conf.pct}%)</span></p>
-    <div class="confidence-track"><div class="confidence-fill" style="width:${conf.pct}%;"></div></div>
-    <p>Margin vs backup: ${fmt(margin)} utility points</p>
+    <p><b>${conf.level}</b> (${conf.pct}%)</p>
+    <p>Margin vs next best (${runner.profile_name}): <b>${fmt(margin)}</b></p>
+    <p><b>User goal:</b> ${goalLabel}</p>
   `;
 
-  els.impactCard.innerHTML = `
-    <h3>Expected immediate impact</h3>
-    <ul>${topDelta}</ul>
-    <p class="${worstDelta.delta < 0 ? "warning" : ""}">Trade-off check: ${FEATURE_LABELS[worstDelta.feature]} ${worstDelta.delta >= 0 ? "stable" : "slightly lower"} (${worstDelta.delta >= 0 ? "+" : ""}${fmt(worstDelta.delta)} vs balanced).</p>
-  `;
-
-  els.actionCard.innerHTML = `
-    <h3>What to do next</h3>
-    <p>1) Play before/after once.</p>
-    <p>2) Use <b>${winner.profile_name}</b> for your next real conversation.</p>
-    <p>3) If it feels too processed, switch to <b>${runner.profile_name}</b>.</p>
-  `;
-
+  renderImpactMetrics(scene.id, winner.profile_id);
   renderScoreTable(scored);
-  return { weightsCfg, scoredByScene: scoreAllScenes(weightsCfg) };
-}
 
-function buildDayPlan(scoredByScene) {
-  const rows = [];
-  for (const scene of state.bundle.scenes) {
-    const scored = scoredByScene[scene.id];
-    const winner = scored[0];
-    const runner = scored[1];
-    rows.push({
-      moment: state.bundle.scene_moments[scene.id] || scene.label,
-      environment: scene.label,
-      ai_pick: winner.profile_name,
-      backup: runner.profile_name,
-      margin: winner.score - runner.score,
-    });
-  }
-
-  const diversity = new Set(rows.map((r) => r.ai_pick)).size;
-  const strongest = [...rows].sort((a, b) => b.margin - a.margin)[0];
-  els.planSummary.innerHTML = `
-    <h3>Your smart day plan</h3>
-    <p>Prepared ${rows.length} moment-level recommendations with ${diversity} unique profile choices.</p>
-    <p>Most confident moment: <b>${strongest.moment}</b> with <b>${strongest.ai_pick}</b>.</p>
-  `;
-
-  const columns = [
-    { label: "Daily moment", render: (r) => r.moment },
-    { label: "Environment", render: (r) => r.environment },
-    { label: "AI pick", render: (r) => r.ai_pick },
-    { label: "Backup", render: (r) => r.backup },
-    { label: "Decision margin", render: (r) => fmt(r.margin) },
-  ];
-  els.planTable.innerHTML = tableHtml(columns, rows);
+  state.lastWeightsCfg = weightsCfg;
+  return { weightsCfg, scoredByScene: scoreAllScenes(weightsCfg), winner };
 }
 
 function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
@@ -381,9 +511,9 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
     }
 
     let localMax = 0;
-    for (const beforeRow of beforeRows) {
-      const afterRow = afterRows.find((row) => row.profile_id === beforeRow.profile_id);
-      localMax = Math.max(localMax, Math.abs(afterRow.score - beforeRow.score));
+    for (const b of beforeRows) {
+      const a = afterRows.find((row) => row.profile_id === b.profile_id);
+      localMax = Math.max(localMax, Math.abs(a.score - b.score));
     }
     maxNonTargetShift = Math.max(maxNonTargetShift, localMax);
 
@@ -411,7 +541,9 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
   };
 }
 
-function renderFeedback(scoredByScene, weightsCfg) {
+function renderFeedback() {
+  const weightsCfg = state.lastWeightsCfg || personalizedWeightsConfig(els.clarity.value, els.noise.value, els.comfort.value);
+
   const targetScene = els.feedbackSceneSelect.value;
   const preferredProfile = els.feedbackProfileSelect.value;
 
@@ -432,7 +564,7 @@ function renderFeedback(scoredByScene, weightsCfg) {
     { label: "Winner before", render: (r) => r.winner_before },
     { label: "Winner after", render: (r) => r.winner_after },
     { label: "Status", render: (r) => r.status },
-    { label: "Max abs score shift", render: (r) => fmt(r.abs_shift, 5) },
+    { label: "Max abs shift", render: (r) => fmt(r.abs_shift, 5) },
   ];
   els.stabilityTable.innerHTML = tableHtml(stabilityColumns, update.stabilityRows);
 
@@ -442,33 +574,28 @@ function renderFeedback(scoredByScene, weightsCfg) {
   const stable = update.diagnostics.max_non_target_abs_score_shift <= update.diagnostics.threshold;
 
   els.feedbackSummary.innerHTML = `
-    <h3>Feedback applied safely</h3>
+    <h3>Update result</h3>
     <p>Target scene: <b>${state.sceneMap[targetScene].label}</b></p>
     <p>Preferred profile: <b>${state.profileMap[preferredProfile].name}</b></p>
-    <p>Target winner ${changed ? "changed as requested" : "did not change yet"}: <b>${winnerBeforeName}</b> -> <b>${winnerAfterName}</b></p>
-    <p>Non-target stability: <b>${fmt(update.diagnostics.max_non_target_abs_score_shift, 5)}</b> max shift vs threshold <b>${fmt(update.diagnostics.threshold, 5)}</b> (${stable ? "PASS" : "FAIL"}).</p>
-    <p>Non-target winner preservation fraction: <b>${fmt(update.diagnostics.non_target_winner_preservation_fraction, 3)}</b></p>
+    <p>Target winner: <b>${winnerBeforeName}</b> → <b>${winnerAfterName}</b> (${changed ? "changed" : "unchanged"})</p>
+    <p>Non-target drift: <b>${fmt(update.diagnostics.max_non_target_abs_score_shift, 5)}</b> (threshold ${fmt(update.diagnostics.threshold, 5)}) ${stable ? "PASS" : "FAIL"}</p>
+    <p>Non-target winner preservation: <b>${fmt(update.diagnostics.non_target_winner_preservation_fraction, 3)}</b></p>
   `;
 }
 
 function initControls() {
-  for (const scene of state.bundle.scenes) {
-    const opt1 = document.createElement("option");
-    opt1.value = scene.id;
-    opt1.textContent = scene.label;
-    els.sceneSelect.appendChild(opt1);
-
-    const opt2 = document.createElement("option");
-    opt2.value = scene.id;
-    opt2.textContent = scene.label;
-    els.feedbackSceneSelect.appendChild(opt2);
-  }
-
   for (const goalLabel of Object.keys(state.bundle.goal_presets)) {
     const option = document.createElement("option");
     option.value = goalLabel;
     option.textContent = goalLabel;
     els.goalSelect.appendChild(option);
+  }
+
+  for (const scene of state.bundle.scenes) {
+    const option = document.createElement("option");
+    option.value = scene.id;
+    option.textContent = scene.label;
+    els.feedbackSceneSelect.appendChild(option);
   }
 
   for (const profile of state.bundle.profiles) {
@@ -478,20 +605,16 @@ function initControls() {
     els.feedbackProfileSelect.appendChild(option);
   }
 
-  els.sceneSelect.value = state.bundle.scenes.find((s) => s.id === "tv_media_listening") ? "tv_media_listening" : state.bundle.scenes[0].id;
-  els.feedbackSceneSelect.value = els.sceneSelect.value;
-  els.goalSelect.value = DEFAULT_GOAL;
-  els.feedbackProfileSelect.value = "noise_suppression_emphasis";
-}
+  const sceneIds = new Set(state.bundle.scenes.map((s) => s.id));
+  state.selectedSceneId = sceneIds.has(DEFAULT_SCENE) ? DEFAULT_SCENE : state.bundle.scenes[0].id;
+  const defaultFeedbackScene = sceneIds.has("meeting_room") ? "meeting_room" : state.selectedSceneId;
+  els.feedbackSceneSelect.value = defaultFeedbackScene;
+  els.goalSelect.value = Object.prototype.hasOwnProperty.call(state.bundle.goal_presets, DEFAULT_GOAL)
+    ? DEFAULT_GOAL
+    : Object.keys(state.bundle.goal_presets)[0];
+  els.feedbackProfileSelect.value = "comfort_softness";
 
-function applyGoalPreset() {
-  const goal = els.goalSelect.value;
-  const preset = state.bundle.goal_presets[goal] || state.bundle.goal_presets[DEFAULT_GOAL];
-  els.clarity.value = String(preset.clarity);
-  els.noise.value = String(preset.noise);
-  els.comfort.value = String(preset.comfort);
-  updateSliderLabels();
-  renderGoalCoach(goal);
+  renderScenePills();
 }
 
 async function loadBundle() {
@@ -521,43 +644,53 @@ async function init() {
     await loadBundle();
     initControls();
     applyGoalPreset();
-    renderSceneOverview(state.sceneMap[els.sceneSelect.value]);
+    renderSceneInfo();
 
     for (const slider of [els.clarity, els.noise, els.comfort]) {
       slider.addEventListener("input", updateSliderLabels);
     }
 
-    els.sceneSelect.addEventListener("change", () => {
-      renderSceneOverview(state.sceneMap[els.sceneSelect.value]);
-      els.feedbackSceneSelect.value = els.sceneSelect.value;
-    });
-
     els.applyGoalBtn.addEventListener("click", () => {
       applyGoalPreset();
       runConcierge();
+      renderFeedback();
     });
 
     els.runBtn.addEventListener("click", () => {
       runConcierge();
+      renderFeedback();
     });
 
-    els.buildPlanBtn.addEventListener("click", () => {
-      const weightsCfg = personalizedWeightsConfig(els.clarity.value, els.noise.value, els.comfort.value);
-      const scoredByScene = scoreAllScenes(weightsCfg);
-      buildDayPlan(scoredByScene);
+    els.playBeforeBtn.addEventListener("click", () => {
+      playSingle("before");
+    });
+
+    els.playAfterBtn.addEventListener("click", () => {
+      playSingle("after");
+    });
+
+    els.playABBtn.addEventListener("click", () => {
+      startABTurbo();
+    });
+
+    els.stopBtn.addEventListener("click", () => {
+      stopAudio();
+    });
+
+    els.demoCompareBtn.addEventListener("click", () => {
+      runConcierge();
+      startABTurbo();
+      document.getElementById("compare-step")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     els.applyFeedbackBtn.addEventListener("click", () => {
-      const weightsCfg = personalizedWeightsConfig(els.clarity.value, els.noise.value, els.comfort.value);
-      const scoredByScene = scoreAllScenes(weightsCfg);
-      renderFeedback(scoredByScene, weightsCfg);
+      renderFeedback();
     });
 
     const initial = runConcierge();
-    buildDayPlan(initial.scoredByScene);
-    renderFeedback(initial.scoredByScene, initial.weightsCfg);
+    renderFeedback(initial.weightsCfg);
   } catch (error) {
-    document.body.innerHTML = `<main class="page"><section class="panel"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
+    document.body.innerHTML = `<main class="shell"><section class="card"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
   }
 }
 

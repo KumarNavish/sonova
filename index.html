@@ -3,165 +3,174 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sonova AI Hearing Concierge</title>
+    <title>Sonova Hearing Concierge</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="site-bg"></div>
-    <main class="page">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Sonova-Facing Interactive Prototype</p>
-          <h1>AI Hearing Concierge</h1>
-          <p>
-            A premium website demo showing how scene-specific utility scoring picks the best hearing profile,
-            and how new feedback updates one scenario locally without drifting others.
-          </p>
-          <div class="hero-pills">
-            <span>Real voice clips</span>
-            <span>Interpretable scoring</span>
-            <span>Safe local updates</span>
-          </div>
+    <div class="ambient"></div>
+    <main class="shell">
+      <header class="hero reveal">
+        <p class="hero-kicker">Sonova Prototype · Real Voice Audio</p>
+        <h1>Hearing Concierge</h1>
+        <p class="hero-copy">
+          A minimal guided website that shows one clear value: AI utility scoring picks the best hearing profile for the
+          current scene, and when feedback arrives, only that scene updates while other scenes stay stable.
+        </p>
+        <div class="hero-actions">
+          <button id="demo-compare-btn" class="btn btn-primary">Hear instant before/after</button>
+          <p class="hero-scene" id="hero-scene-label">Scene: —</p>
         </div>
-        <div class="hero-card">
-          <h3>Guided in 3 steps</h3>
-          <ol>
-            <li>Select listening moment and goal.</li>
-            <li>Run AI sound check and hear before/after.</li>
-            <li>Use recommendation with confidence and next actions.</li>
-          </ol>
-        </div>
-      </section>
+      </header>
 
-      <section class="panel" id="concierge-panel">
-        <div class="panel-head">
-          <h2>1) Live Concierge</h2>
-          <p>Pick your moment, tune your priorities, and get an immediate recommendation.</p>
+      <section class="card reveal" id="scene-step">
+        <div class="section-head">
+          <h2>1. Pick your moment</h2>
+          <p>Choose where you are and what matters most right now.</p>
         </div>
 
-        <div class="controls-grid">
+        <div id="scene-pills" class="pills"></div>
+
+        <article id="scene-overview" class="mini-card"></article>
+
+        <div class="goal-grid">
           <label>
-            Listening scene
-            <select id="scene-select"></select>
-          </label>
-          <label>
-            What do you want most right now?
+            Preference preset
             <select id="goal-select"></select>
           </label>
-          <button id="apply-goal-btn" class="secondary">Apply goal preset</button>
-          <button id="run-btn" class="primary">Run AI sound check</button>
+          <button id="apply-goal-btn" class="btn btn-ghost">Apply preset</button>
         </div>
 
-        <div id="goal-coach" class="coach-card"></div>
-        <div id="scene-overview" class="overview-card"></div>
+        <article id="goal-coach" class="mini-card"></article>
 
         <div class="slider-grid">
           <label>
-            Speech clarity priority
+            Speech clarity
             <input id="clarity-slider" type="range" min="0" max="100" value="60" />
             <span id="clarity-value">60</span>
           </label>
           <label>
-            Noise control priority
+            Noise control
             <input id="noise-slider" type="range" min="0" max="100" value="60" />
             <span id="noise-value">60</span>
           </label>
           <label>
-            Comfort priority
+            Comfort
             <input id="comfort-slider" type="range" min="0" max="100" value="55" />
             <span id="comfort-value">55</span>
           </label>
         </div>
 
-        <div class="audio-grid">
-          <div class="audio-card">
-            <h3>Before (Noisy Voice)</h3>
-            <audio id="before-audio" controls preload="none"></audio>
-          </div>
-          <div class="audio-card">
-            <h3>After (Recommended Profile)</h3>
-            <audio id="after-audio" controls preload="none"></audio>
-          </div>
+        <button id="run-btn" class="btn btn-primary">Update AI recommendation</button>
+      </section>
+
+      <section class="card reveal" id="compare-step">
+        <div class="section-head">
+          <h2>2. Hear the change</h2>
+          <p id="compare-caption">Raw microphone-like scene input versus the AI-selected hearing profile.</p>
         </div>
 
-        <div class="result-grid">
-          <article class="result-card" id="winner-card"></article>
-          <article class="result-card" id="confidence-card"></article>
-          <article class="result-card" id="impact-card"></article>
-          <article class="result-card" id="action-card"></article>
+        <div class="ab-controls">
+          <button id="play-before-btn" class="btn btn-ghost">Play raw</button>
+          <button id="play-after-btn" class="btn btn-primary">Play AI enhanced</button>
+          <button id="play-ab-btn" class="btn btn-ghost">A/B turbo switch</button>
+          <button id="stop-btn" class="btn btn-ghost">Stop</button>
+        </div>
+
+        <div class="status-row">
+          <span id="now-playing-badge" class="badge">Idle</span>
+          <span id="ab-hint">Tip: Use A/B turbo to hear differences at the same timestamp.</span>
+        </div>
+
+        <div class="audio-grid">
+          <article class="audio-card">
+            <h3>Before: noisy voice note</h3>
+            <audio id="before-audio" controls preload="none"></audio>
+          </article>
+          <article class="audio-card">
+            <h3>After: AI recommended profile</h3>
+            <audio id="after-audio" controls preload="none"></audio>
+          </article>
+          <article class="audio-card">
+            <h3>Scene background bed (optional)</h3>
+            <audio id="noise-audio" controls preload="none"></audio>
+          </article>
+        </div>
+
+        <div class="impact-grid">
+          <article class="impact-card" id="impact-noise"></article>
+          <article class="impact-card" id="impact-speech"></article>
+          <article class="impact-card" id="impact-harshness"></article>
+          <article class="impact-card" id="impact-focus"></article>
+        </div>
+      </section>
+
+      <section class="card reveal" id="decision-step">
+        <div class="section-head">
+          <h2>3. Why this profile won</h2>
+          <p>The explanation below is generated directly from scene weights and measured feature values.</p>
+        </div>
+
+        <div class="decision-grid">
+          <article class="mini-card" id="winner-card"></article>
+          <article class="mini-card" id="confidence-card"></article>
         </div>
 
         <div class="table-wrap">
-          <h3>Candidate utility breakdown</h3>
           <table id="score-table"></table>
         </div>
       </section>
 
-      <section class="panel">
-        <div class="panel-head">
-          <h2>2) My Day Plan</h2>
-          <p>Generate a practical moment-by-moment plan from your current priorities.</p>
-        </div>
-        <button id="build-plan-btn" class="primary">Build my day plan</button>
-        <article class="result-card" id="plan-summary"></article>
-        <div class="table-wrap">
-          <table id="plan-table"></table>
-        </div>
-      </section>
-
-      <section class="panel" id="feedback-panel">
-        <div class="panel-head">
-          <h2>3) Feedback Update (Local and Safe)</h2>
-          <p>Simulate new user/clinician feedback for one scenario and verify stability elsewhere.</p>
+      <section class="card reveal" id="feedback-step">
+        <div class="section-head">
+          <h2>4. Apply new feedback safely</h2>
+          <p>Simulate a clinician/patient preference update for one scenario only.</p>
         </div>
 
-        <div class="controls-grid">
+        <div class="feedback-controls">
           <label>
-            Scenario receiving new feedback
+            Target scenario
             <select id="feedback-scene-select"></select>
           </label>
           <label>
-            Preferred profile from feedback
+            Preferred profile
             <select id="feedback-profile-select"></select>
           </label>
-          <button id="apply-feedback-btn" class="primary">Apply local preference update</button>
+          <button id="apply-feedback-btn" class="btn btn-primary">Apply local update</button>
         </div>
 
-        <article class="result-card" id="feedback-summary"></article>
+        <article id="feedback-summary" class="mini-card"></article>
 
-        <div class="table-grid">
+        <div class="table-split">
           <div class="table-wrap">
-            <h3>Target scene scores (before)</h3>
+            <h3>Before update (target scene)</h3>
             <table id="feedback-before-table"></table>
           </div>
           <div class="table-wrap">
-            <h3>Target scene scores (after)</h3>
+            <h3>After update (target scene)</h3>
             <table id="feedback-after-table"></table>
           </div>
         </div>
 
         <div class="table-wrap">
-          <h3>Non-target stability check</h3>
+          <h3>Non-target scene stability</h3>
           <table id="stability-table"></table>
         </div>
       </section>
 
-      <section class="panel method-panel">
-        <h2>Method in plain terms</h2>
+      <section class="card reveal method-card">
+        <h2>Method in one minute</h2>
         <p>
-          Utility score = sum(scene-specific weight x interpretable feature value). Features are intelligibility,
-          noise control, comfort, loudness stability, and speech prominence.
+          Utility(scene, profile) = Σ weight(scene, feature) × feature(profile). Features used: intelligibility,
+          noise control, comfort, loudness stability, speech prominence.
         </p>
         <p>
-          Feedback update changes only the selected scene's weights with bounded adjustment and regularization,
-          then verifies other scenes remain stable under a score-shift threshold.
+          Feedback update modifies only the selected scene's utility weights with bounded shift + regularization,
+          then verifies non-target score drift stays below threshold.
         </p>
-        <p class="muted">
-          Illustrative prototype for conversation and fitting strategy exploration. Not a production hearing-aid algorithm.
-        </p>
+        <p class="muted">Illustrative Sonova-facing prototype, not a production hearing algorithm.</p>
       </section>
     </main>
 

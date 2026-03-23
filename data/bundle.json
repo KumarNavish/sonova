@@ -215,363 +215,593 @@
       "scene_id": "cafe_restaurant",
       "profile_id": "balanced_default",
       "audio_path": "data/processed/candidates/cafe_restaurant/balanced_default.wav",
-      "intelligibility": 0.6288186071970502,
-      "noise_control": 1.9032583634548162e-09,
-      "comfort": 0.980228703087318,
-      "loudness_stability": 0.7279739812682499,
-      "speech_prominence": 0.131149008086258
+      "intelligibility": 0.4434913725483218,
+      "noise_control": 0.0002590498453875,
+      "comfort": 0.979291973527448,
+      "loudness_stability": 0.381467752213401,
+      "speech_prominence": 0.6488678481072834
     },
     {
       "scene_id": "cafe_restaurant",
       "profile_id": "comfort_softness",
       "audio_path": "data/processed/candidates/cafe_restaurant/comfort_softness.wav",
-      "intelligibility": 0.6284970135847201,
-      "noise_control": 3.918493917490987e-17,
-      "comfort": 0.9822760572286572,
-      "loudness_stability": 0.8003812083521729,
-      "speech_prominence": 0.0680525510452933
+      "intelligibility": 0.3649308532852255,
+      "noise_control": 3.192852575072812e-09,
+      "comfort": 0.9819240525099504,
+      "loudness_stability": 0.4474184092995537,
+      "speech_prominence": 0.3191316639106061
     },
     {
       "scene_id": "cafe_restaurant",
       "profile_id": "directional_focus",
       "audio_path": "data/processed/candidates/cafe_restaurant/directional_focus.wav",
-      "intelligibility": 0.9648437269164244,
-      "noise_control": 8.808006718744997e-06,
-      "comfort": 0.9770192134218076,
-      "loudness_stability": 0.2131972131239706,
-      "speech_prominence": 0.2342662695379986
+      "intelligibility": 0.9944453727385772,
+      "noise_control": 0.1066303182424776,
+      "comfort": 0.9720224185797676,
+      "loudness_stability": 0.2991784821405987,
+      "speech_prominence": 0.8171112620148845
     },
     {
       "scene_id": "cafe_restaurant",
       "profile_id": "music_naturalness",
       "audio_path": "data/processed/candidates/cafe_restaurant/music_naturalness.wav",
-      "intelligibility": 0.2913428477156051,
-      "noise_control": 0.0032785711293816,
-      "comfort": 0.9848466962243722,
-      "loudness_stability": 0.6466404164620312,
-      "speech_prominence": 0.2975996850958544
+      "intelligibility": 0.4610484439505121,
+      "noise_control": 0.2986084090377924,
+      "comfort": 0.9831925145844576,
+      "loudness_stability": 0.3304832935482648,
+      "speech_prominence": 0.852111027996311
     },
     {
       "scene_id": "cafe_restaurant",
       "profile_id": "noise_suppression_emphasis",
       "audio_path": "data/processed/candidates/cafe_restaurant/noise_suppression_emphasis.wav",
-      "intelligibility": 0.7239423379281884,
-      "noise_control": 8.155016855834051e-14,
-      "comfort": 0.9805724338363364,
-      "loudness_stability": 0.6762528066268183,
-      "speech_prominence": 0.0900984454492425
+      "intelligibility": 0.8743484537770045,
+      "noise_control": 0.0055087422681583,
+      "comfort": 0.974384609409542,
+      "loudness_stability": 0.0192398992101541,
+      "speech_prominence": 0.7460586396136
     },
     {
       "scene_id": "cafe_restaurant",
       "profile_id": "speech_clarity_boost",
       "audio_path": "data/processed/candidates/cafe_restaurant/speech_clarity_boost.wav",
-      "intelligibility": 0.9743115365572588,
-      "noise_control": 2.924890121124363e-05,
-      "comfort": 0.9762226055216972,
-      "loudness_stability": 0.5243836102455989,
-      "speech_prominence": 0.3020182265087595
+      "intelligibility": 0.9746365125145025,
+      "noise_control": 0.0863862549852653,
+      "comfort": 0.973532407898554,
+      "loudness_stability": 0.3235308783309157,
+      "speech_prominence": 0.8122292497944459
     },
     {
       "scene_id": "crowd_social",
       "profile_id": "balanced_default",
       "audio_path": "data/processed/candidates/crowd_social/balanced_default.wav",
-      "intelligibility": 0.9999679321750224,
-      "noise_control": 1.1835831645032484e-16,
-      "comfort": 0.9367834935268676,
-      "loudness_stability": 0.8604495048784958,
-      "speech_prominence": 0.1194921659223065
+      "intelligibility": 0.9956992436954024,
+      "noise_control": 6.549560121021225e-05,
+      "comfort": 0.9545073829488648,
+      "loudness_stability": 0.6496575426938132,
+      "speech_prominence": 0.7430941209519518
     },
     {
       "scene_id": "crowd_social",
       "profile_id": "comfort_softness",
       "audio_path": "data/processed/candidates/crowd_social/comfort_softness.wav",
-      "intelligibility": 0.9998624271326048,
-      "noise_control": 2.52698411234821e-25,
-      "comfort": 0.97841768414268,
-      "loudness_stability": 0.881683231422238,
-      "speech_prominence": 0.0858224770024723
+      "intelligibility": 0.9799511272381096,
+      "noise_control": 2.768098034077442e-07,
+      "comfort": 0.9813606373406776,
+      "loudness_stability": 0.6588375062289903,
+      "speech_prominence": 0.707189326417477
     },
     {
       "scene_id": "crowd_social",
       "profile_id": "directional_focus",
       "audio_path": "data/processed/candidates/crowd_social/directional_focus.wav",
-      "intelligibility": 0.9999992469192416,
-      "noise_control": 9.198542084422572e-14,
-      "comfort": 0.9709288681479552,
-      "loudness_stability": 0.816017133585701,
-      "speech_prominence": 0.2196061063572344
+      "intelligibility": 0.9999783034910223,
+      "noise_control": 0.4748142161057674,
+      "comfort": 0.9680352956732928,
+      "loudness_stability": 0.3971473284754546,
+      "speech_prominence": 0.9786531224881428
     },
     {
       "scene_id": "crowd_social",
       "profile_id": "music_naturalness",
       "audio_path": "data/processed/candidates/crowd_social/music_naturalness.wav",
-      "intelligibility": 0.9998340574443172,
-      "noise_control": 6.619539818702584e-09,
-      "comfort": 0.9584371134313948,
-      "loudness_stability": 0.8301556586629943,
-      "speech_prominence": 0.1981474411587641
+      "intelligibility": 0.9983469136699504,
+      "noise_control": 0.0028399418967769,
+      "comfort": 0.963104331612512,
+      "loudness_stability": 0.6857324356986533,
+      "speech_prominence": 0.6920738921032158
     },
     {
       "scene_id": "crowd_social",
       "profile_id": "noise_suppression_emphasis",
       "audio_path": "data/processed/candidates/crowd_social/noise_suppression_emphasis.wav",
-      "intelligibility": 0.999964323233248,
-      "noise_control": 2.854484243010999e-20,
-      "comfort": 0.9738241296187712,
-      "loudness_stability": 0.8536007721251263,
-      "speech_prominence": 0.1255395238106341
+      "intelligibility": 0.997072021106554,
+      "noise_control": 0.9990696054682698,
+      "comfort": 0.9717247423340404,
+      "loudness_stability": 0.0154688436449499,
+      "speech_prominence": 0.9997953920715223
     },
     {
       "scene_id": "crowd_social",
       "profile_id": "speech_clarity_boost",
       "audio_path": "data/processed/candidates/crowd_social/speech_clarity_boost.wav",
-      "intelligibility": 0.9999997935939616,
-      "noise_control": 1.511151255726727e-12,
-      "comfort": 0.9597457663528588,
-      "loudness_stability": 0.8350668285376854,
-      "speech_prominence": 0.1900318149463441
+      "intelligibility": 0.9998165830644232,
+      "noise_control": 0.1555250281818234,
+      "comfort": 0.9639538703323712,
+      "loudness_stability": 0.4755181353924211,
+      "speech_prominence": 0.9501568352032176
     },
     {
       "scene_id": "meeting_room",
       "profile_id": "balanced_default",
       "audio_path": "data/processed/candidates/meeting_room/balanced_default.wav",
-      "intelligibility": 0.9893634244027338,
-      "noise_control": 2.2733313141550718e-17,
-      "comfort": 0.9574126015833736,
-      "loudness_stability": 0.6860801543673883,
-      "speech_prominence": 0.4393679182633392
+      "intelligibility": 0.9900636351875932,
+      "noise_control": 0.0078848160695994,
+      "comfort": 0.9541497664662746,
+      "loudness_stability": 0.3764083991953635,
+      "speech_prominence": 0.9777587972252286
     },
     {
       "scene_id": "meeting_room",
       "profile_id": "comfort_softness",
       "audio_path": "data/processed/candidates/meeting_room/comfort_softness.wav",
-      "intelligibility": 0.9544423950581938,
-      "noise_control": 3.4711624268056846e-31,
-      "comfort": 0.9827172082868364,
-      "loudness_stability": 0.7318771144463465,
-      "speech_prominence": 0.2532534586881357
+      "intelligibility": 0.9670050896659484,
+      "noise_control": 1.897126498536689e-06,
+      "comfort": 0.981348946256538,
+      "loudness_stability": 0.4428936341372834,
+      "speech_prominence": 0.9466665015819464
     },
     {
       "scene_id": "meeting_room",
       "profile_id": "directional_focus",
       "audio_path": "data/processed/candidates/meeting_room/directional_focus.wav",
-      "intelligibility": 0.999654288326244,
-      "noise_control": 2.2151010739799267e-06,
-      "comfort": 0.9757795041979206,
-      "loudness_stability": 0.1785389105058827,
-      "speech_prominence": 0.8711782358997321
+      "intelligibility": 0.9999770900976112,
+      "noise_control": 0.8708314419856291,
+      "comfort": 0.9677942860532148,
+      "loudness_stability": 0.1474918322205324,
+      "speech_prominence": 0.9981211092440924
     },
     {
       "scene_id": "meeting_room",
       "profile_id": "music_naturalness",
       "audio_path": "data/processed/candidates/meeting_room/music_naturalness.wav",
-      "intelligibility": 0.97134382785963,
-      "noise_control": 1.4549601191199684e-09,
-      "comfort": 0.96973689905023,
-      "loudness_stability": 0.6486168236510164,
-      "speech_prominence": 0.6001836770689748
+      "intelligibility": 0.9938786761121768,
+      "noise_control": 0.2299453575744476,
+      "comfort": 0.9647749985613308,
+      "loudness_stability": 0.368035275828021,
+      "speech_prominence": 0.9847253830930852
     },
     {
       "scene_id": "meeting_room",
       "profile_id": "noise_suppression_emphasis",
       "audio_path": "data/processed/candidates/meeting_room/noise_suppression_emphasis.wav",
-      "intelligibility": 0.98785628868537,
-      "noise_control": 3.111694733308758e-21,
-      "comfort": 0.9786915024911736,
-      "loudness_stability": 0.5420719489140643,
-      "speech_prominence": 0.4434415206921276
+      "intelligibility": 0.99685267792692,
+      "noise_control": 0.9996878637620544,
+      "comfort": 0.9718596979930584,
+      "loudness_stability": 0.0007448003038287,
+      "speech_prominence": 0.9999982233835194
     },
     {
       "scene_id": "meeting_room",
       "profile_id": "speech_clarity_boost",
       "audio_path": "data/processed/candidates/meeting_room/speech_clarity_boost.wav",
-      "intelligibility": 0.9998124224473756,
-      "noise_control": 9.040312290948587e-10,
-      "comfort": 0.9667104959161378,
-      "loudness_stability": 0.5353077551216201,
-      "speech_prominence": 0.7437095578098175
+      "intelligibility": 0.9997570931485216,
+      "noise_control": 0.8072629251003294,
+      "comfort": 0.9635897355476832,
+      "loudness_stability": 0.1696255105422334,
+      "speech_prominence": 0.995446701325086
     },
     {
       "scene_id": "quiet_conversation",
       "profile_id": "balanced_default",
       "audio_path": "data/processed/candidates/quiet_conversation/balanced_default.wav",
-      "intelligibility": 0.4229622351285229,
-      "noise_control": 3.527463983911065e-12,
-      "comfort": 0.9772584820183574,
-      "loudness_stability": 0.5142593463698059,
-      "speech_prominence": 0.3606782816071178
+      "intelligibility": 0.3772723245113593,
+      "noise_control": 1.802927862585624e-08,
+      "comfort": 0.9775221162811278,
+      "loudness_stability": 0.3599652464479658,
+      "speech_prominence": 0.498391093647604
     },
     {
       "scene_id": "quiet_conversation",
       "profile_id": "comfort_softness",
       "audio_path": "data/processed/candidates/quiet_conversation/comfort_softness.wav",
-      "intelligibility": 0.4520972870052742,
-      "noise_control": 5.834235674068775e-22,
-      "comfort": 0.9848880505610362,
-      "loudness_stability": 0.5696696730247535,
-      "speech_prominence": 0.210221493255314
+      "intelligibility": 0.4237594688036494,
+      "noise_control": 3.60374859291207e-11,
+      "comfort": 0.984772317599334,
+      "loudness_stability": 0.4667777123703219,
+      "speech_prominence": 0.3756984997155075
     },
     {
       "scene_id": "quiet_conversation",
       "profile_id": "directional_focus",
       "audio_path": "data/processed/candidates/quiet_conversation/directional_focus.wav",
-      "intelligibility": 0.9987644987681058,
-      "noise_control": 0.0014858669716116,
-      "comfort": 0.9765815712754996,
-      "loudness_stability": 0.0800341369358093,
-      "speech_prominence": 0.8345143134187177
+      "intelligibility": 0.9999459331614228,
+      "noise_control": 0.0455610443091804,
+      "comfort": 0.9710696518652352,
+      "loudness_stability": 0.1772410851046453,
+      "speech_prominence": 0.8584401354740402
     },
     {
       "scene_id": "quiet_conversation",
       "profile_id": "music_naturalness",
       "audio_path": "data/processed/candidates/quiet_conversation/music_naturalness.wav",
-      "intelligibility": 0.1670289548780001,
-      "noise_control": 0.0001979187775457,
-      "comfort": 0.9838439276879064,
-      "loudness_stability": 0.4260072415655607,
-      "speech_prominence": 0.7322247490036434
+      "intelligibility": 0.2617198692586858,
+      "noise_control": 0.0100721061873252,
+      "comfort": 0.9826446281619564,
+      "loudness_stability": 0.2694327164205119,
+      "speech_prominence": 0.8170350275432267
     },
     {
       "scene_id": "quiet_conversation",
       "profile_id": "noise_suppression_emphasis",
       "audio_path": "data/processed/candidates/quiet_conversation/noise_suppression_emphasis.wav",
-      "intelligibility": 0.5008355926009473,
-      "noise_control": 9.817130411068844e-18,
-      "comfort": 0.98351920123028,
-      "loudness_stability": 0.2173767257774169,
-      "speech_prominence": 0.3028278898764584
+      "intelligibility": 0.9838693523391392,
+      "noise_control": 0.016452814336222,
+      "comfort": 0.9746996907750336,
+      "loudness_stability": 0.0054237236711609,
+      "speech_prominence": 0.8278040521720543
     },
     {
       "scene_id": "quiet_conversation",
       "profile_id": "speech_clarity_boost",
       "audio_path": "data/processed/candidates/quiet_conversation/speech_clarity_boost.wav",
-      "intelligibility": 0.9985683032567236,
-      "noise_control": 1.2962573146822326e-05,
-      "comfort": 0.972726855601244,
-      "loudness_stability": 0.4551745650929474,
-      "speech_prominence": 0.6145647456696738
+      "intelligibility": 0.999026444794819,
+      "noise_control": 0.0477653541254748,
+      "comfort": 0.9703575949107182,
+      "loudness_stability": 0.1956950770359714,
+      "speech_prominence": 0.7767169971223336
     },
     {
       "scene_id": "traffic_street",
       "profile_id": "balanced_default",
       "audio_path": "data/processed/candidates/traffic_street/balanced_default.wav",
-      "intelligibility": 0.2513004316634751,
-      "noise_control": 1.6637970416234458e-07,
-      "comfort": 0.9811594277738084,
-      "loudness_stability": 0.8749796760045393,
-      "speech_prominence": 0.0626049008728511
+      "intelligibility": 0.354631529144435,
+      "noise_control": 0.0214692189479895,
+      "comfort": 0.9780842894191228,
+      "loudness_stability": 0.6536836094628485,
+      "speech_prominence": 0.345032940718912
     },
     {
       "scene_id": "traffic_street",
       "profile_id": "comfort_softness",
       "audio_path": "data/processed/candidates/traffic_street/comfort_softness.wav",
-      "intelligibility": 0.4166278022945189,
-      "noise_control": 3.115109562090725e-12,
-      "comfort": 0.9821586405934551,
-      "loudness_stability": 0.9041274321036746,
-      "speech_prominence": 0.040736704882315
+      "intelligibility": 0.3987165944490075,
+      "noise_control": 0.0002248507712425,
+      "comfort": 0.9849973921156584,
+      "loudness_stability": 0.7008973045568208,
+      "speech_prominence": 0.2438696112216015
     },
     {
       "scene_id": "traffic_street",
       "profile_id": "directional_focus",
       "audio_path": "data/processed/candidates/traffic_street/directional_focus.wav",
-      "intelligibility": 0.5921068466484632,
-      "noise_control": 8.21404550398172e-05,
-      "comfort": 0.9779890082266296,
-      "loudness_stability": 0.6957746336409081,
-      "speech_prominence": 0.1714911187099864
+      "intelligibility": 0.9999209293631124,
+      "noise_control": 0.572167902932714,
+      "comfort": 0.9717768196047034,
+      "loudness_stability": 0.5499212624307251,
+      "speech_prominence": 0.6393774911356787
     },
     {
       "scene_id": "traffic_street",
       "profile_id": "music_naturalness",
       "audio_path": "data/processed/candidates/traffic_street/music_naturalness.wav",
-      "intelligibility": 0.085546373181152,
-      "noise_control": 0.0036473053485335,
-      "comfort": 0.9856483783419192,
-      "loudness_stability": 0.8318610098961754,
-      "speech_prominence": 0.1138082431831276
+      "intelligibility": 0.238024650027486,
+      "noise_control": 0.6782773333615587,
+      "comfort": 0.9830818196289376,
+      "loudness_stability": 0.6221976555135293,
+      "speech_prominence": 0.5365150453688193
     },
     {
       "scene_id": "traffic_street",
       "profile_id": "noise_suppression_emphasis",
       "audio_path": "data/processed/candidates/traffic_street/noise_suppression_emphasis.wav",
-      "intelligibility": 0.3723066697152923,
-      "noise_control": 1.9146423490451288e-10,
-      "comfort": 0.9828148238168672,
-      "loudness_stability": 0.8758781809882004,
-      "speech_prominence": 0.0505797494389115
+      "intelligibility": 0.9835153212994214,
+      "noise_control": 0.8903366307828309,
+      "comfort": 0.9747713340601972,
+      "loudness_stability": 0.0513353753657733,
+      "speech_prominence": 0.7375554360509452
     },
     {
       "scene_id": "traffic_street",
       "profile_id": "speech_clarity_boost",
       "audio_path": "data/processed/candidates/traffic_street/speech_clarity_boost.wav",
-      "intelligibility": 0.6671654563290111,
-      "noise_control": 0.0010691299629516,
-      "comfort": 0.9768977226799372,
-      "loudness_stability": 0.7206346302399377,
-      "speech_prominence": 0.2050489200747008
+      "intelligibility": 0.9985677983222347,
+      "noise_control": 0.375204622713978,
+      "comfort": 0.9711705753057204,
+      "loudness_stability": 0.5970193080407667,
+      "speech_prominence": 0.4954236530094782
     },
     {
       "scene_id": "tv_media_listening",
       "profile_id": "balanced_default",
       "audio_path": "data/processed/candidates/tv_media_listening/balanced_default.wav",
-      "intelligibility": 0.5358130177885763,
-      "noise_control": 3.9148678946012424e-12,
-      "comfort": 0.9795469355173156,
-      "loudness_stability": 0.8048738137212165,
-      "speech_prominence": 0.1411524009434118
+      "intelligibility": 0.4449021109534268,
+      "noise_control": 0.0002189120301658,
+      "comfort": 0.9792535511381306,
+      "loudness_stability": 0.3443924101402817,
+      "speech_prominence": 0.6417215399948932
     },
     {
       "scene_id": "tv_media_listening",
       "profile_id": "comfort_softness",
       "audio_path": "data/processed/candidates/tv_media_listening/comfort_softness.wav",
-      "intelligibility": 0.4487326318614896,
-      "noise_control": 1.2994837889941022e-20,
-      "comfort": 0.9834813972012676,
-      "loudness_stability": 0.8581250681622811,
-      "speech_prominence": 0.0700929346170758
+      "intelligibility": 0.3651435683036469,
+      "noise_control": 9.829714323986403e-10,
+      "comfort": 0.9819299613271396,
+      "loudness_stability": 0.4079738759413245,
+      "speech_prominence": 0.3228150603967003
     },
     {
       "scene_id": "tv_media_listening",
       "profile_id": "directional_focus",
       "audio_path": "data/processed/candidates/tv_media_listening/directional_focus.wav",
-      "intelligibility": 0.9778925079974616,
-      "noise_control": 3.859067561409808e-06,
-      "comfort": 0.976034936324894,
-      "loudness_stability": 0.212047434037888,
-      "speech_prominence": 0.3637027055945733
+      "intelligibility": 0.9946049747686848,
+      "noise_control": 0.0923199115688808,
+      "comfort": 0.9719718233629916,
+      "loudness_stability": 0.2672233738671655,
+      "speech_prominence": 0.8367055319670722
     },
     {
       "scene_id": "tv_media_listening",
       "profile_id": "music_naturalness",
       "audio_path": "data/processed/candidates/tv_media_listening/music_naturalness.wav",
-      "intelligibility": 0.3050928866998323,
-      "noise_control": 1.0771623786176444e-05,
-      "comfort": 0.9843695594890678,
-      "loudness_stability": 0.7429647787311852,
-      "speech_prominence": 0.2851271280372871
+      "intelligibility": 0.4648393693327411,
+      "noise_control": 0.3393012717093092,
+      "comfort": 0.9831697343796776,
+      "loudness_stability": 0.300967262709119,
+      "speech_prominence": 0.8702322291303505
     },
     {
       "scene_id": "tv_media_listening",
       "profile_id": "noise_suppression_emphasis",
       "audio_path": "data/processed/candidates/tv_media_listening/noise_suppression_emphasis.wav",
-      "intelligibility": 0.6110359568915115,
-      "noise_control": 3.621840755917957e-16,
-      "comfort": 0.9812473976649032,
-      "loudness_stability": 0.7970295723899689,
-      "speech_prominence": 0.1069581673374509
+      "intelligibility": 0.8750388227480345,
+      "noise_control": 0.0043733925713889,
+      "comfort": 0.974385721984394,
+      "loudness_stability": 0.0109706059602883,
+      "speech_prominence": 0.7439982402351455
     },
     {
       "scene_id": "tv_media_listening",
       "profile_id": "speech_clarity_boost",
       "audio_path": "data/processed/candidates/tv_media_listening/speech_clarity_boost.wav",
-      "intelligibility": 0.9853865487246288,
-      "noise_control": 3.2992548067444176e-05,
-      "comfort": 0.9743747411444594,
-      "loudness_stability": 0.577456541676628,
-      "speech_prominence": 0.4673093315978933
+      "intelligibility": 0.9751818352917913,
+      "noise_control": 0.1053521870058612,
+      "comfort": 0.9734943186517968,
+      "loudness_stability": 0.2891648038121192,
+      "speech_prominence": 0.8218555752808618
     }
   ],
+  "audio_metrics": {
+    "quiet_conversation": {
+      "speech_clarity_boost": {
+        "noise_floor_drop_db": -2.6650366191664583,
+        "speech_band_shift_db": 11.063344223611274,
+        "harshness_reduction_db": -8.935233559927482,
+        "speech_focus_delta_pct": 40.284923128170604
+      },
+      "noise_suppression_emphasis": {
+        "noise_floor_drop_db": -3.468855453571942,
+        "speech_band_shift_db": 12.2057922273749,
+        "harshness_reduction_db": -9.92922365503344,
+        "speech_focus_delta_pct": 27.16644615381104
+      },
+      "comfort_softness": {
+        "noise_floor_drop_db": -11.789106758265753,
+        "speech_band_shift_db": 10.172550012353177,
+        "harshness_reduction_db": -6.258065176077871,
+        "speech_focus_delta_pct": 4.138103990990031
+      },
+      "directional_focus": {
+        "noise_floor_drop_db": -2.702961483990251,
+        "speech_band_shift_db": 12.277620404045571,
+        "harshness_reduction_db": -8.230972256856091,
+        "speech_focus_delta_pct": 57.353821666116964
+      },
+      "balanced_default": {
+        "noise_floor_drop_db": -9.937907620665175,
+        "speech_band_shift_db": 7.910259785434867,
+        "harshness_reduction_db": -10.846027599528078,
+        "speech_focus_delta_pct": 2.241599252239959
+      },
+      "music_naturalness": {
+        "noise_floor_drop_db": -3.8096789377211957,
+        "speech_band_shift_db": 4.260536292829009,
+        "harshness_reduction_db": -5.231708440255673,
+        "speech_focus_delta_pct": -0.2938014268985184
+      }
+    },
+    "cafe_restaurant": {
+      "speech_clarity_boost": {
+        "noise_floor_drop_db": -2.1647329532072472,
+        "speech_band_shift_db": 8.815798264728926,
+        "harshness_reduction_db": -11.903209470207386,
+        "speech_focus_delta_pct": 21.64510008820912
+      },
+      "noise_suppression_emphasis": {
+        "noise_floor_drop_db": -4.209085433222629,
+        "speech_band_shift_db": 10.033165249450441,
+        "harshness_reduction_db": -15.253224256753626,
+        "speech_focus_delta_pct": 12.65526394197874
+      },
+      "comfort_softness": {
+        "noise_floor_drop_db": -10.494365348382482,
+        "speech_band_shift_db": 9.512334700285493,
+        "harshness_reduction_db": -13.512636747751671,
+        "speech_focus_delta_pct": -0.5918858050018655
+      },
+      "directional_focus": {
+        "noise_floor_drop_db": -1.9733998811685183,
+        "speech_band_shift_db": 9.866583014742233,
+        "harshness_reduction_db": -12.844582564510098,
+        "speech_focus_delta_pct": 30.03935736332442
+      },
+      "balanced_default": {
+        "noise_floor_drop_db": -5.981371616502221,
+        "speech_band_shift_db": 8.305338652849464,
+        "harshness_reduction_db": -13.331151626050243,
+        "speech_focus_delta_pct": 1.086406711768395
+      },
+      "music_naturalness": {
+        "noise_floor_drop_db": -0.8473513367718752,
+        "speech_band_shift_db": 5.887580102814887,
+        "harshness_reduction_db": -6.287304100588358,
+        "speech_focus_delta_pct": 1.503991945743266
+      }
+    },
+    "traffic_street": {
+      "speech_clarity_boost": {
+        "noise_floor_drop_db": -0.515898330935579,
+        "speech_band_shift_db": 10.290043927672095,
+        "harshness_reduction_db": -8.97474717005666,
+        "speech_focus_delta_pct": 43.81860930298787
+      },
+      "noise_suppression_emphasis": {
+        "noise_floor_drop_db": 2.513867794392126,
+        "speech_band_shift_db": 11.498583862951534,
+        "harshness_reduction_db": -10.05212918262432,
+        "speech_focus_delta_pct": 32.53412168938688
+      },
+      "comfort_softness": {
+        "noise_floor_drop_db": -6.055195652815815,
+        "speech_band_shift_db": 9.442624575154838,
+        "harshness_reduction_db": -6.221791979544662,
+        "speech_focus_delta_pct": 9.079067372836343
+      },
+      "directional_focus": {
+        "noise_floor_drop_db": 0.3084114847902978,
+        "speech_band_shift_db": 11.452315369634611,
+        "harshness_reduction_db": -8.212647683094168,
+        "speech_focus_delta_pct": 60.84628378211796
+      },
+      "balanced_default": {
+        "noise_floor_drop_db": -3.277127166465474,
+        "speech_band_shift_db": 7.174458041756267,
+        "harshness_reduction_db": -10.817641849798932,
+        "speech_focus_delta_pct": 7.26348882814059
+      },
+      "music_naturalness": {
+        "noise_floor_drop_db": 0.8144388050164402,
+        "speech_band_shift_db": 3.550644360918781,
+        "harshness_reduction_db": -5.230724931992825,
+        "speech_focus_delta_pct": 4.557803655942476
+      }
+    },
+    "meeting_room": {
+      "speech_clarity_boost": {
+        "noise_floor_drop_db": 1.6381208539626506,
+        "speech_band_shift_db": 13.019576276372725,
+        "harshness_reduction_db": -8.965510430468093,
+        "speech_focus_delta_pct": 15.839552427131377
+      },
+      "noise_suppression_emphasis": {
+        "noise_floor_drop_db": 30.06445993220181,
+        "speech_band_shift_db": 14.376166704383252,
+        "harshness_reduction_db": -10.22762910246022,
+        "speech_focus_delta_pct": 3.3207238217644375
+      },
+      "comfort_softness": {
+        "noise_floor_drop_db": -8.235828052016366,
+        "speech_band_shift_db": 14.134346193990275,
+        "harshness_reduction_db": -6.687466494727545,
+        "speech_focus_delta_pct": -9.189271710435337
+      },
+      "directional_focus": {
+        "noise_floor_drop_db": 2.2589082476876046,
+        "speech_band_shift_db": 14.059543769429098,
+        "harshness_reduction_db": -8.246709849034133,
+        "speech_focus_delta_pct": 29.533196713907373
+      },
+      "balanced_default": {
+        "noise_floor_drop_db": -3.9741753995040514,
+        "speech_band_shift_db": 12.187091406688097,
+        "harshness_reduction_db": -14.221679352032943,
+        "speech_focus_delta_pct": -3.463927341694095
+      },
+      "music_naturalness": {
+        "noise_floor_drop_db": -1.1763704776608592,
+        "speech_band_shift_db": 9.222097214991301,
+        "harshness_reduction_db": -9.12391589732649,
+        "speech_focus_delta_pct": -0.8472332291516949
+      }
+    },
+    "tv_media_listening": {
+      "speech_clarity_boost": {
+        "noise_floor_drop_db": -1.9845946216253052,
+        "speech_band_shift_db": 9.165859811859065,
+        "harshness_reduction_db": -11.3000967556141,
+        "speech_focus_delta_pct": 18.600390109257376
+      },
+      "noise_suppression_emphasis": {
+        "noise_floor_drop_db": -4.3567299673271105,
+        "speech_band_shift_db": 10.393933540644731,
+        "harshness_reduction_db": -14.644915644067652,
+        "speech_focus_delta_pct": 9.527222788637696
+      },
+      "comfort_softness": {
+        "noise_floor_drop_db": -10.85365324155686,
+        "speech_band_shift_db": 9.851568651227488,
+        "harshness_reduction_db": -12.884559979484784,
+        "speech_focus_delta_pct": -3.748853603665986
+      },
+      "directional_focus": {
+        "noise_floor_drop_db": -2.1052691005900774,
+        "speech_band_shift_db": 10.223304677857726,
+        "harshness_reduction_db": -12.240539507181715,
+        "speech_focus_delta_pct": 27.032837339415888
+      },
+      "balanced_default": {
+        "noise_floor_drop_db": -6.069081882873552,
+        "speech_band_shift_db": 8.632611799558944,
+        "harshness_reduction_db": -12.71175719426892,
+        "speech_focus_delta_pct": -2.046305549196223
+      },
+      "music_naturalness": {
+        "noise_floor_drop_db": -0.668226948160614,
+        "speech_band_shift_db": 6.1779852952445395,
+        "harshness_reduction_db": -5.626260057641147,
+        "speech_focus_delta_pct": -1.5769784028530631
+      }
+    },
+    "crowd_social": {
+      "speech_clarity_boost": {
+        "noise_floor_drop_db": -1.6055220114094597,
+        "speech_band_shift_db": 9.78952720613372,
+        "harshness_reduction_db": -4.84305654455229,
+        "speech_focus_delta_pct": -13.285343130284055
+      },
+      "noise_suppression_emphasis": {
+        "noise_floor_drop_db": 15.781677781761259,
+        "speech_band_shift_db": 11.002846157858095,
+        "harshness_reduction_db": -6.174546188172243,
+        "speech_focus_delta_pct": -26.947721400751867
+      },
+      "comfort_softness": {
+        "noise_floor_drop_db": -8.980282204150036,
+        "speech_band_shift_db": 11.123541406661907,
+        "harshness_reduction_db": -2.6050337378678066,
+        "speech_focus_delta_pct": -37.10461552127806
+      },
+      "directional_focus": {
+        "noise_floor_drop_db": -0.10446348923418412,
+        "speech_band_shift_db": 10.71470272301707,
+        "harshness_reduction_db": -4.141519594107194,
+        "speech_focus_delta_pct": -0.8291051228256463
+      },
+      "balanced_default": {
+        "noise_floor_drop_db": -6.6730373704785615,
+        "speech_band_shift_db": 9.422499482111625,
+        "harshness_reduction_db": -10.279951919436336,
+        "speech_focus_delta_pct": -29.628513087317444
+      },
+      "music_naturalness": {
+        "noise_floor_drop_db": -4.626003061671699,
+        "speech_band_shift_db": 6.843168847889139,
+        "harshness_reduction_db": -5.915983660325438,
+        "speech_focus_delta_pct": -24.488716261061416
+      }
+    }
+  },
   "goal_presets": {
     "Hear speech clearly in noise": {
       "clarity": 82,

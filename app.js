@@ -18,31 +18,20 @@ const DEFAULT_SCENE = "crowd_social";
 const DEFAULT_PRIORITY = 62;
 const DEFAULT_FEEDBACK_SCENE = "meeting_room";
 const DEFAULT_FEEDBACK_PROFILE = "comfort_softness";
-const AB_TOGGLE_MS = 1100;
+const AB_TOGGLE_MS = 1050;
 const SAVED_KEY = "sonova_saved_scene_profiles";
 
 const els = {
   launchBtn: document.getElementById("launch-btn"),
   playABHeroBtn: document.getElementById("play-ab-hero-btn"),
+
   heroProfile: document.getElementById("hero-profile"),
   heroScene: document.getElementById("hero-scene"),
-  pulseBars: document.getElementById("pulse-bars"),
+  signalBars: document.getElementById("signal-bars"),
 
-  stepButtons: {
-    1: document.getElementById("step-1"),
-    2: document.getElementById("step-2"),
-    3: document.getElementById("step-3"),
-  },
-  stages: {
-    1: document.getElementById("stage-1"),
-    2: document.getElementById("stage-2"),
-    3: document.getElementById("stage-3"),
-  },
-
-  sceneGrid: document.getElementById("scene-grid"),
+  scenePills: document.getElementById("scene-pills"),
   prioritySlider: document.getElementById("priority-slider"),
   priorityValue: document.getElementById("priority-value"),
-  generateBtn: document.getElementById("generate-btn"),
 
   sceneCaption: document.getElementById("scene-caption"),
   winnerName: document.getElementById("winner-name"),
@@ -62,16 +51,12 @@ const els = {
   rawAudio: document.getElementById("raw-audio"),
   aiAudio: document.getElementById("ai-audio"),
 
-  toStage1Btn: document.getElementById("to-stage-1-btn"),
-  toStage2Btn: document.getElementById("to-stage-2-btn"),
-  toStage3Btn: document.getElementById("to-stage-3-btn"),
-
-  recommendTitle: document.getElementById("recommend-title"),
-  recommendReason: document.getElementById("recommend-reason"),
-  recommendAction: document.getElementById("recommend-action"),
-  recommendBackup: document.getElementById("recommend-backup"),
+  recommendPrimary: document.getElementById("recommend-primary"),
+  recommendWhy: document.getElementById("recommend-why"),
+  recommendHow: document.getElementById("recommend-how"),
   saveSceneBtn: document.getElementById("save-scene-btn"),
   savedBadge: document.getElementById("saved-badge"),
+
   scoreTable: document.getElementById("score-table"),
 
   feedbackSceneSelect: document.getElementById("feedback-scene-select"),
@@ -89,9 +74,7 @@ const state = {
   profileMap: {},
   featuresByScene: {},
   selectedSceneId: null,
-  currentStep: 1,
   lastWeightsCfg: null,
-  lastScored: null,
   lastWinner: null,
   abTimer: null,
   abNext: "raw",
@@ -114,6 +97,7 @@ function clone(value) {
 function normalizeWeights(weightObj) {
   const safe = {};
   let total = 0;
+
   for (const key of Object.keys(weightObj)) {
     safe[key] = Math.max(1e-6, Number(weightObj[key]));
     total += safe[key];
@@ -140,7 +124,7 @@ function applyPreferenceTilt(baseWeights, priority) {
 
   tuned.intelligibility += 0.14 * tilt;
   tuned.speech_prominence += 0.1 * tilt;
-  tuned.noise_control += 0.06 * tilt;
+  tuned.noise_control += 0.07 * tilt;
   tuned.comfort -= 0.1 * tilt;
   tuned.loudness_stability -= 0.05 * tilt;
 
@@ -189,8 +173,8 @@ function scoreScene(sceneId, weightsCfg) {
   });
 
   scored.sort((a, b) => b.score - a.score);
-  scored.forEach((row, idx) => {
-    row.rank = idx + 1;
+  scored.forEach((row, index) => {
+    row.rank = index + 1;
   });
 
   return { scored, weights };
@@ -205,7 +189,7 @@ function scoreAllScenes(weightsCfg) {
 }
 
 function decisionConfidence(margin) {
-  const pct = Math.max(56, Math.min(97, Math.round(57 + 700 * margin)));
+  const pct = Math.max(56, Math.min(97, Math.round(56 + 700 * margin)));
   if (margin >= 0.045) {
     return { level: "High", pct };
   }
@@ -221,21 +205,13 @@ function topContributions(contributions, topK = 2) {
     .slice(0, topK);
 }
 
-function setStep(step) {
-  state.currentStep = step;
-  for (const id of [1, 2, 3]) {
-    els.stages[id].classList.toggle("is-hidden", id !== step);
-    els.stepButtons[id].classList.toggle("is-active", id === step);
-  }
-}
-
 function setPlayState(text, tone = "neutral") {
   els.playState.className = `status${tone === "good" ? " good" : tone === "warn" ? " warn" : ""}`;
   els.playState.textContent = text;
 }
 
-function setPulse(isPlaying) {
-  els.pulseBars.classList.toggle("is-playing", Boolean(isPlaying));
+function setSignal(isPlaying) {
+  els.signalBars.classList.toggle("is-playing", Boolean(isPlaying));
 }
 
 function stopAudio() {
@@ -245,7 +221,7 @@ function stopAudio() {
   }
   els.rawAudio.pause();
   els.aiAudio.pause();
-  setPulse(false);
+  setSignal(false);
   setPlayState("Idle", "neutral");
 }
 
@@ -282,19 +258,14 @@ async function playSingle(which) {
     return;
   }
 
-  setPulse(which === "ai");
-  if (which === "raw") {
-    setPlayState("Playing raw scene audio", "warn");
-  } else {
-    setPlayState("Playing AI-enhanced profile", "good");
-  }
+  setSignal(which === "ai");
+  setPlayState(which === "raw" ? "Playing raw" : "Playing AI", which === "raw" ? "warn" : "good");
 }
 
 function abStep() {
-  const playRaw = state.abNext === "raw";
-  const src = playRaw ? els.rawAudio : els.aiAudio;
-  const other = playRaw ? els.aiAudio : els.rawAudio;
-
+  const useRaw = state.abNext === "raw";
+  const src = useRaw ? els.rawAudio : els.aiAudio;
+  const other = useRaw ? els.aiAudio : els.rawAudio;
   other.pause();
 
   const anchor = Math.min(state.abAnchorSec, Math.max(0.1, (src.duration || 2.0) - 0.1));
@@ -304,13 +275,11 @@ function abStep() {
     src.currentTime = 0;
   }
 
-  src.play().catch(() => {
-    stopAudio();
-  });
+  src.play().catch(() => stopAudio());
+  state.abNext = useRaw ? "ai" : "raw";
 
-  state.abNext = playRaw ? "ai" : "raw";
-  setPulse(!playRaw);
-  setPlayState(playRaw ? "A/B: raw" : "A/B: AI", playRaw ? "warn" : "good");
+  setSignal(!useRaw);
+  setPlayState(useRaw ? "A/B raw" : "A/B AI", useRaw ? "warn" : "good");
 }
 
 function startAB() {
@@ -322,23 +291,26 @@ function startAB() {
   state.abTimer = setInterval(abStep, AB_TOGGLE_MS);
 }
 
-function renderSceneCards() {
-  els.sceneGrid.innerHTML = "";
+function renderScenePills() {
+  els.scenePills.innerHTML = "";
+
   for (const scene of state.bundle.scenes) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `scene-card${scene.id === state.selectedSceneId ? " is-active" : ""}`;
-    btn.innerHTML = `<span class="name">${scene.label}</span><span class="desc">${scene.description}</span>`;
-    btn.addEventListener("click", () => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `scene-pill${scene.id === state.selectedSceneId ? " is-active" : ""}`;
+    button.textContent = scene.label;
+
+    button.addEventListener("click", () => {
       if (scene.id === state.selectedSceneId) {
         return;
       }
       state.selectedSceneId = scene.id;
-      renderSceneCards();
-      runRecommendation(false);
+      renderScenePills();
+      runRecommendation();
       renderSavedState();
     });
-    els.sceneGrid.appendChild(btn);
+
+    els.scenePills.appendChild(button);
   }
 }
 
@@ -358,46 +330,11 @@ function renderScoreTable(scored) {
     { label: "Utility", render: (r) => fmt(r.score) },
     ...FEATURE_COLUMNS.map((f) => ({ label: FEATURE_LABELS[f], render: (r) => fmt(r[f]) })),
   ];
+
   els.scoreTable.innerHTML = tableHtml(columns, scored);
 }
 
-function renderRecommendationCards(scene, winner, runner, margin, conf, weights) {
-  const topEvidence = topContributions(winner.contributions, 2)
-    .map(([feature]) => FEATURE_LABELS[feature])
-    .join(" + ");
-
-  const prioritySummary = Object.entries(weights)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 2)
-    .map(([feature, weight]) => `${FEATURE_LABELS[feature]} (${fmt(weight, 2)})`)
-    .join(", ");
-
-  const momentLabel = state.bundle.scene_moments?.[scene.id] || scene.label;
-
-  els.recommendTitle.innerHTML = `
-    <h3>${winner.profile_name}</h3>
-    <p>Best match for <b>${scene.label}</b></p>
-    <p>Moment: ${momentLabel}</p>
-  `;
-
-  els.recommendReason.innerHTML = `
-    <h3>Why it wins</h3>
-    <p>Top evidence: <b>${topEvidence}</b>.</p>
-    <p>Scene weighting: ${prioritySummary}.</p>
-  `;
-
-  els.recommendAction.innerHTML = `
-    <h3>Use now</h3>
-    <p>Start with <b>${winner.profile_name}</b>.</p>
-    <p>If needed, switch to <b>${runner.profile_name}</b>.</p>
-  `;
-
-  els.recommendBackup.innerHTML = `
-    <b>Decision confidence:</b> ${conf.pct}% (${conf.level}) · utility margin ${fmt(margin)}.
-  `;
-}
-
-function runRecommendation(moveToHearStage) {
+function runRecommendation() {
   const scene = state.sceneMap[state.selectedSceneId];
   const priority = Number(els.prioritySlider.value);
 
@@ -410,7 +347,6 @@ function runRecommendation(moveToHearStage) {
 
   state.lastWeightsCfg = weightsCfg;
   state.lastWinner = winner;
-  state.lastScored = scored;
 
   stopAudio();
   els.rawAudio.src = scene.audio.noisy;
@@ -419,7 +355,7 @@ function runRecommendation(moveToHearStage) {
   els.heroProfile.textContent = winner.profile_name;
   els.heroScene.textContent = `for ${scene.label}`;
 
-  els.sceneCaption.textContent = `Scene: ${scene.label}. Compare the same timestamp to hear the AI lift.`;
+  els.sceneCaption.textContent = `Scene: ${scene.label}`;
   els.winnerName.textContent = winner.profile_name;
   els.winnerDesc.textContent = winner.profile_description;
 
@@ -445,7 +381,7 @@ function runRecommendation(moveToHearStage) {
     els.metricSpeech,
     "Speech presence",
     `${fmtSigned(speech, 1)} dB`,
-    `Speech band lift, focus shift ${fmtSigned(focusShift, 1)} pts`,
+    `Speech focus shift ${fmtSigned(focusShift, 1)} pts`,
     speech >= 0 ? "good" : "warn",
   );
 
@@ -453,21 +389,44 @@ function runRecommendation(moveToHearStage) {
     els.metricConfidence,
     "Decision confidence",
     `${conf.pct}%`,
-    `Utility margin ${fmt(margin)} in this scene`,
+    `Utility margin ${fmt(margin)}`,
     conf.level === "Needs listening check" ? "warn" : "good",
   );
 
+  const top = topContributions(winner.contributions, 2)
+    .map(([feature]) => FEATURE_LABELS[feature])
+    .join(" + ");
+
+  const focus = Object.entries(weights)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([feature, weight]) => `${FEATURE_LABELS[feature]} (${fmt(weight, 2)})`)
+    .join(", ");
+
+  els.recommendPrimary.innerHTML = `
+    <h3>${winner.profile_name}</h3>
+    <p>Best fit for <b>${scene.label}</b>.</p>
+  `;
+
+  els.recommendWhy.innerHTML = `
+    <h3>Why this wins</h3>
+    <p>Top evidence: <b>${top}</b>.</p>
+    <p>Scene priorities: ${focus}.</p>
+  `;
+
+  els.recommendHow.innerHTML = `
+    <h3>How to use</h3>
+    <p>Primary: <b>${winner.profile_name}</b>. Fallback: <b>${runner.profile_name}</b>.</p>
+    <p>${conf.pct}% confidence in this scene.</p>
+  `;
+
   els.stateCopy.textContent =
     conf.level === "Needs listening check"
-      ? "Close scores: use Smart A/B before locking your choice."
-      : "Smart A/B is locked to one timestamp so differences are easy to hear.";
+      ? "Close scores. Use Smart A/B before saving."
+      : "Smart A/B locks to one timestamp so the difference is obvious.";
 
-  renderRecommendationCards(scene, winner, runner, margin, conf, weights);
   renderScoreTable(scored);
-
-  if (moveToHearStage) {
-    setStep(2);
-  }
+  renderFeedback();
 }
 
 function getSavedMap() {
@@ -503,6 +462,7 @@ function saveCurrentSceneSetting() {
     scene_label: scene.label,
     ts: new Date().toISOString(),
   };
+
   localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
   renderSavedState();
 }
@@ -531,11 +491,11 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
   const clipped = proposed.map((v, i) => Math.min(oldVec[i] + maxShift, Math.max(oldVec[i] - maxShift, v)));
   const updated = clipped.map((v, i) => (1 - reg) * v + reg * oldVec[i]);
 
-  const newWeightObj = {};
+  const newWeights = {};
   FEATURE_COLUMNS.forEach((feature, i) => {
-    newWeightObj[feature] = Math.max(1e-6, updated[i]);
+    newWeights[feature] = Math.max(1e-6, updated[i]);
   });
-  updatedCfg.scene_weights[targetScene] = normalizeWeights(newWeightObj);
+  updatedCfg.scene_weights[targetScene] = normalizeWeights(newWeights);
 
   const scoresAfter = scoreAllScenes(updatedCfg);
   const sceneAfter = [...scoresAfter[targetScene]];
@@ -556,7 +516,7 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
 
     let localMax = 0;
     for (const before of beforeRows) {
-      const after = afterRows.find((row) => row.profile_id === before.profile_id);
+      const after = afterRows.find((r) => r.profile_id === before.profile_id);
       localMax = Math.max(localMax, Math.abs(after.score - before.score));
     }
 
@@ -587,15 +547,19 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
 function renderFeedback() {
   const targetScene = els.feedbackSceneSelect.value;
   const preferredProfile = els.feedbackProfileSelect.value;
-  const weightsCfg = state.lastWeightsCfg || personalizedWeightsConfig(els.prioritySlider.value);
 
-  const update = applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile);
+  if (!targetScene || !preferredProfile || !state.lastWeightsCfg) {
+    return;
+  }
+
+  const update = applyLocalPreferenceUpdate(state.lastWeightsCfg, targetScene, preferredProfile);
 
   const cols = [
     { label: "Profile", render: (r) => state.profileMap[r.profile_id].name },
     { label: "Score", render: (r) => fmt(r.score) },
     { label: "Rank", render: (r) => r.rank },
   ];
+
   els.feedbackBeforeTable.innerHTML = tableHtml(cols, update.sceneBefore);
   els.feedbackAfterTable.innerHTML = tableHtml(cols, update.sceneAfter);
 
@@ -606,6 +570,7 @@ function renderFeedback() {
     { label: "Status", render: (r) => r.status },
     { label: "Max abs shift", render: (r) => fmt(r.abs_shift, 5) },
   ];
+
   els.stabilityTable.innerHTML = tableHtml(stabilityCols, update.stabilityRows);
 
   const beforeWinner = state.profileMap[update.diagnostics.winner_before].name;
@@ -615,13 +580,12 @@ function renderFeedback() {
 
   els.feedbackSummary.innerHTML = `
     <p><b>Target scene:</b> ${state.sceneMap[targetScene].label}</p>
-    <p><b>Preferred profile:</b> ${state.profileMap[preferredProfile].name}</p>
     <p><b>Winner:</b> ${beforeWinner} → ${afterWinner} (${changed ? "changed" : "unchanged"})</p>
     <p><b>Non-target drift:</b> ${fmt(update.diagnostics.max_non_target_abs_score_shift, 5)} / ${fmt(update.diagnostics.threshold, 5)} (${stable ? "PASS" : "FAIL"})</p>
   `;
 }
 
-function initSelects() {
+function initFeedbackControls() {
   els.feedbackSceneSelect.innerHTML = "";
   els.feedbackProfileSelect.innerHTML = "";
 
@@ -640,11 +604,10 @@ function initSelects() {
   }
 
   const sceneIds = new Set(state.bundle.scenes.map((s) => s.id));
-  state.selectedSceneId = sceneIds.has(DEFAULT_SCENE) ? DEFAULT_SCENE : state.bundle.scenes[0].id;
   els.feedbackSceneSelect.value = sceneIds.has(DEFAULT_FEEDBACK_SCENE) ? DEFAULT_FEEDBACK_SCENE : state.selectedSceneId;
-  els.feedbackProfileSelect.value = state.profileMap[DEFAULT_FEEDBACK_PROFILE] ? DEFAULT_FEEDBACK_PROFILE : state.bundle.profiles[0].id;
-  els.prioritySlider.value = String(DEFAULT_PRIORITY);
-  els.priorityValue.textContent = String(DEFAULT_PRIORITY);
+  els.feedbackProfileSelect.value = state.profileMap[DEFAULT_FEEDBACK_PROFILE]
+    ? DEFAULT_FEEDBACK_PROFILE
+    : state.bundle.profiles[0].id;
 }
 
 async function loadBundle() {
@@ -674,26 +637,20 @@ async function loadBundle() {
 
 function wireEvents() {
   els.launchBtn.addEventListener("click", () => {
-    runRecommendation(true);
+    runRecommendation();
     startAB();
-    renderFeedback();
-    document.getElementById("demo").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("live-demo").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   els.playABHeroBtn.addEventListener("click", () => {
-    runRecommendation(true);
+    runRecommendation();
     startAB();
-    document.getElementById("demo").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  els.generateBtn.addEventListener("click", () => {
-    runRecommendation(true);
-    renderFeedback();
+    document.getElementById("live-demo").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   els.prioritySlider.addEventListener("input", () => {
     els.priorityValue.textContent = String(els.prioritySlider.value);
-    runRecommendation(false);
+    runRecommendation();
   });
 
   els.playRawBtn.addEventListener("click", () => playSingle("raw"));
@@ -701,37 +658,31 @@ function wireEvents() {
   els.playABBtn.addEventListener("click", () => startAB());
   els.stopBtn.addEventListener("click", () => stopAudio());
 
-  els.toStage1Btn.addEventListener("click", () => {
-    stopAudio();
-    setStep(1);
-  });
-  els.toStage2Btn.addEventListener("click", () => setStep(2));
-  els.toStage3Btn.addEventListener("click", () => {
-    setStep(3);
-    renderSavedState();
-  });
-
-  els.stepButtons[1].addEventListener("click", () => setStep(1));
-  els.stepButtons[2].addEventListener("click", () => setStep(2));
-  els.stepButtons[3].addEventListener("click", () => setStep(3));
-
   els.saveSceneBtn.addEventListener("click", () => saveCurrentSceneSetting());
+
   els.applyFeedbackBtn.addEventListener("click", () => renderFeedback());
+  els.feedbackSceneSelect.addEventListener("change", () => renderFeedback());
+  els.feedbackProfileSelect.addEventListener("change", () => renderFeedback());
 }
 
 async function init() {
   try {
     await loadBundle();
-    initSelects();
-    renderSceneCards();
+
+    const sceneIds = new Set(state.bundle.scenes.map((s) => s.id));
+    state.selectedSceneId = sceneIds.has(DEFAULT_SCENE) ? DEFAULT_SCENE : state.bundle.scenes[0].id;
+
+    els.prioritySlider.value = String(DEFAULT_PRIORITY);
+    els.priorityValue.textContent = String(DEFAULT_PRIORITY);
+
+    renderScenePills();
+    initFeedbackControls();
     wireEvents();
 
-    setStep(1);
-    runRecommendation(false);
-    renderFeedback();
+    runRecommendation();
     renderSavedState();
   } catch (error) {
-    document.body.innerHTML = `<main class="page"><section class="panel" style="padding:16px;"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
+    document.body.innerHTML = `<main class="wrap"><section class="card" style="padding: 16px;"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
   }
 }
 

@@ -3,125 +3,87 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sonova Scene Intelligence</title>
+    <title>Sonova Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="ambient" aria-hidden="true"></div>
+    <div class="bg"></div>
 
-    <main class="page">
-      <header class="hero panel">
-        <div class="topline">
+    <main class="wrap">
+      <header class="hero">
+        <div class="brand-row">
           <span class="brand-dot"></span>
-          <span>Sonova Scene Intelligence</span>
+          <span class="brand-text">Sonova Intelligence</span>
         </div>
 
         <div class="hero-grid">
           <div>
-            <p class="eyebrow">Enterprise product demo</p>
-            <h1>One tap to hear speech more clearly in your real moment.</h1>
-            <p class="lede">
-              Real voices. Scene-aware profile selection. Transparent utility model. Instant local preference update.
+            <p class="eyebrow">Minimal enterprise demo</p>
+            <h1>Hear speech clearly in your exact scene.</h1>
+            <p class="sub">
+              Real voice clips. Scene-aware profile selection. One recommendation you can trust immediately.
             </p>
-
             <div class="hero-actions">
-              <button id="launch-btn" class="btn btn-primary" type="button">Launch Live Demo</button>
-              <button id="play-ab-hero-btn" class="btn btn-ghost" type="button">Hear A/B Instantly</button>
-            </div>
-
-            <div class="trust-row">
-              <span class="pill">Real voice clips</span>
-              <span class="pill">Interpretable scoring</span>
-              <span class="pill">Stable local updates</span>
+              <button id="launch-btn" class="btn btn-primary" type="button">Start Live Demo</button>
+              <button id="play-ab-hero-btn" class="btn btn-soft" type="button">Instant A/B</button>
             </div>
           </div>
 
           <aside class="hero-signal" aria-live="polite">
-            <p class="signal-label">Live recommendation</p>
+            <p class="signal-label">Current recommendation</p>
             <h2 id="hero-profile">Balanced Default</h2>
             <p id="hero-scene">for Crowd / Social Gathering</p>
-            <div id="pulse-bars" class="pulse-bars" aria-hidden="true">
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
+            <div id="signal-bars" class="signal-bars" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
           </aside>
         </div>
       </header>
 
-      <section id="demo" class="demo panel">
-        <nav class="progress" aria-label="Demo steps">
-          <button id="step-1" class="step is-active" type="button"><span>1</span>Moment</button>
-          <button id="step-2" class="step" type="button"><span>2</span>Hear</button>
-          <button id="step-3" class="step" type="button"><span>3</span>Use</button>
-        </nav>
-
-        <section id="stage-1" class="stage">
-          <div class="stage-head">
-            <h2>Pick the moment you are in</h2>
-            <p>AI tunes for this exact scene, not a generic mode.</p>
+      <section id="live-demo" class="card demo">
+        <div class="controls-top">
+          <div>
+            <p class="section-kicker">Choose your listening moment</p>
+            <div id="scene-pills" class="scene-pills"></div>
           </div>
 
-          <div id="scene-grid" class="scene-grid"></div>
-
-          <article class="tuning-card">
-            <label for="priority-slider">Your preference: comfort <span>↔</span> speech clarity</label>
+          <label class="pref" for="priority-slider">
+            Preference
             <input id="priority-slider" type="range" min="0" max="100" value="62" />
-            <div class="tuning-scale">
-              <span>More comfort</span>
+            <div class="pref-scale">
+              <span>Comfort</span>
               <strong id="priority-value">62</strong>
-              <span>More clarity</span>
+              <span>Clarity</span>
             </div>
-          </article>
+          </label>
+        </div>
 
-          <div class="stage-actions">
-            <button id="generate-btn" class="btn btn-primary" type="button">Generate My Live Recommendation</button>
-          </div>
-        </section>
-
-        <section id="stage-2" class="stage is-hidden">
-          <div class="stage-head">
-            <h2>Hear the difference on the same voice sample</h2>
-            <p id="scene-caption">Scene: Crowd / Social Gathering</p>
-          </div>
-
-          <div class="theatre">
-            <article class="audio-pane raw">
-              <p class="pane-label">Before</p>
-              <h3>Raw scene audio</h3>
-              <p>Original mixed voice + background noise.</p>
-            </article>
-
-            <article class="audio-pane ai">
-              <p class="pane-label">After</p>
+        <article class="card compare">
+          <div class="compare-head">
+            <div>
+              <p id="scene-caption" class="scene-caption">Scene: Crowd / Social Gathering</p>
               <h3 id="winner-name">AI selected profile</h3>
-              <p id="winner-desc">Profile description</p>
-            </article>
+              <p id="winner-desc" class="winner-desc">Profile description</p>
+            </div>
+            <span id="play-state" class="status">Idle</span>
           </div>
 
           <div class="listen-controls">
-            <button id="play-raw-btn" class="btn btn-ghost" type="button">Play Raw</button>
+            <button id="play-raw-btn" class="btn btn-soft" type="button">Play Raw</button>
             <button id="play-ai-btn" class="btn btn-primary" type="button">Play AI</button>
-            <button id="play-ab-btn" class="btn btn-ghost" type="button">Smart A/B Loop</button>
-            <button id="stop-btn" class="btn btn-ghost" type="button">Stop</button>
+            <button id="play-ab-btn" class="btn btn-soft" type="button">Smart A/B</button>
+            <button id="stop-btn" class="btn btn-soft" type="button">Stop</button>
           </div>
 
-          <div class="status-row">
-            <span id="play-state" class="status">Idle</span>
-            <span id="state-copy">Smart A/B syncs timestamp so changes are obvious.</span>
-          </div>
+          <p id="state-copy" class="state-copy">Smart A/B locks to one timestamp so the difference is obvious.</p>
 
-          <div class="metrics-grid">
+          <div class="metrics">
             <article id="metric-noise" class="metric"></article>
             <article id="metric-speech" class="metric"></article>
             <article id="metric-confidence" class="metric"></article>
@@ -140,46 +102,30 @@
               </label>
             </div>
           </details>
+        </article>
 
-          <div class="stage-actions split">
-            <button id="to-stage-1-btn" class="btn btn-ghost" type="button">Back</button>
-            <button id="to-stage-3-btn" class="btn btn-primary" type="button">Show Final Recommendation</button>
-          </div>
-        </section>
+        <article class="card recommendation">
+          <div id="recommend-primary" class="rec-block"></div>
+          <div id="recommend-why" class="rec-block"></div>
+          <div id="recommend-how" class="rec-block"></div>
 
-        <section id="stage-3" class="stage is-hidden">
-          <div class="stage-head">
-            <h2>Use this setting now</h2>
-            <p>One primary profile plus one fallback for confidence.</p>
-          </div>
-
-          <div class="recommend-grid">
-            <article id="recommend-title" class="recommend-card"></article>
-            <article id="recommend-reason" class="recommend-card"></article>
-            <article id="recommend-action" class="recommend-card"></article>
-          </div>
-
-          <article id="recommend-backup" class="backup-card"></article>
-
-          <div class="stage-actions split">
-            <button id="to-stage-2-btn" class="btn btn-ghost" type="button">Back</button>
+          <div class="recommend-actions">
             <button id="save-scene-btn" class="btn btn-primary" type="button">Save For This Scene</button>
+            <p id="saved-badge" class="saved-badge is-hidden"></p>
           </div>
+        </article>
 
-          <p id="saved-badge" class="saved-badge is-hidden"></p>
-
-          <details class="score-details">
-            <summary>Full utility score table</summary>
-            <div class="table-wrap">
-              <table id="score-table"></table>
-            </div>
-          </details>
-        </section>
+        <details class="scores">
+          <summary>Full utility score table</summary>
+          <div class="table-wrap">
+            <table id="score-table"></table>
+          </div>
+        </details>
       </section>
 
-      <section class="proof panel">
+      <section class="card proof">
         <details>
-          <summary>Safety proof: local feedback update without unrelated drift</summary>
+          <summary>Local feedback update proof</summary>
 
           <div class="proof-controls">
             <label>
@@ -193,7 +139,7 @@
             <button id="apply-feedback-btn" class="btn btn-primary" type="button">Apply Local Update</button>
           </div>
 
-          <article id="feedback-summary" class="proof-summary"></article>
+          <article id="feedback-summary" class="feedback-summary"></article>
 
           <div class="proof-tables">
             <div class="table-wrap">
@@ -207,7 +153,7 @@
           </div>
 
           <div class="table-wrap">
-            <h3>Non-target scenes</h3>
+            <h3>Non-target stability</h3>
             <table id="stability-table"></table>
           </div>
         </details>

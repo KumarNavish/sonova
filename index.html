@@ -6,177 +6,190 @@
     <title>Sonova Hearing Concierge</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="bg"></div>
-    <main class="app-shell">
-      <header class="hero panel">
-        <p class="kicker">Real voice demo · Sonova prototype</p>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">Real voice hearing check</p>
         <h1>Hearing Concierge</h1>
-        <p class="hero-copy">
-          Pick your listening moment, hear a direct before vs AI-enhanced comparison, and get one clear recommendation you can use right away.
+        <p>
+          A simple 3-step experience: choose your moment, hear raw vs AI-enhanced speech, and get one practical recommendation.
         </p>
-        <div class="hero-row">
-          <button id="start-check-btn" class="btn btn-primary">Start my 60-second sound check</button>
-          <span id="current-scene-pill" class="pill-info">Scene: —</span>
-        </div>
+        <button id="hero-start-btn" class="btn btn-primary">Start 60-second check</button>
       </header>
 
-      <section class="panel" id="step-1">
-        <div class="step-head">
-          <span class="step-no">Step 1</span>
-          <h2>Choose your current moment</h2>
-          <p>Tell the concierge where you are and what you want most.</p>
-        </div>
+      <section class="wizard">
+        <nav class="steps" aria-label="Progress">
+          <button id="step-btn-1" class="step-pill is-active" type="button">1. Moment</button>
+          <button id="step-btn-2" class="step-pill" type="button">2. Hear</button>
+          <button id="step-btn-3" class="step-pill" type="button">3. Use</button>
+        </nav>
 
-        <div id="scene-cards" class="scene-grid"></div>
+        <section id="screen-1" class="screen">
+          <header class="screen-head">
+            <h2>Where are you right now?</h2>
+            <p>Pick the listening scene that matches your current situation.</p>
+          </header>
 
-        <div class="controls-row">
-          <label>
-            Listening goal
-            <select id="goal-select"></select>
-          </label>
-          <button id="apply-goal-btn" class="btn btn-soft">Apply goal</button>
-        </div>
+          <div id="scene-cards" class="scene-grid"></div>
 
-        <article id="goal-coach" class="mini"></article>
+          <header class="screen-head compact">
+            <h3>What matters most now?</h3>
+          </header>
+          <div id="goal-chips" class="goal-chips"></div>
 
-        <details class="fine-tune">
-          <summary>Fine tune priorities (optional)</summary>
-          <div class="sliders">
-            <label>
-              Speech clarity
-              <input id="clarity-slider" type="range" min="0" max="100" value="60" />
-              <span id="clarity-value">60</span>
-            </label>
-            <label>
-              Noise control
-              <input id="noise-slider" type="range" min="0" max="100" value="60" />
-              <span id="noise-value">60</span>
-            </label>
-            <label>
-              Comfort
-              <input id="comfort-slider" type="range" min="0" max="100" value="55" />
-              <span id="comfort-value">55</span>
-            </label>
-          </div>
-        </details>
+          <article id="goal-coach" class="coach"></article>
 
-        <button id="run-btn" class="btn btn-primary">Get my recommendation</button>
-      </section>
-
-      <section class="panel" id="step-2">
-        <div class="step-head">
-          <span class="step-no">Step 2</span>
-          <h2>Hear the difference</h2>
-          <p id="compare-subtitle">A/B the exact same moment with and without AI processing.</p>
-        </div>
-
-        <article id="winner-highlight" class="winner"></article>
-
-        <div class="compare-actions">
-          <button id="play-before-btn" class="btn btn-soft">Play raw</button>
-          <button id="play-after-btn" class="btn btn-primary">Play AI enhanced</button>
-          <button id="play-ab-btn" class="btn btn-soft">Smart A/B compare</button>
-          <button id="stop-btn" class="btn btn-soft">Stop</button>
-        </div>
-
-        <div class="listen-status">
-          <span id="play-state" class="status-badge">Idle</span>
-          <span class="hint">Tip: Smart A/B flips between raw and AI at the same timestamp.</span>
-        </div>
-
-        <div class="impact-grid">
-          <article class="impact" id="impact-1"></article>
-          <article class="impact" id="impact-2"></article>
-          <article class="impact" id="impact-3"></article>
-        </div>
-
-        <details class="manual-audio">
-          <summary>Manual audio players</summary>
-          <div class="players">
-            <label>
-              Before (noisy)
-              <audio id="before-audio" controls preload="none"></audio>
-            </label>
-            <label>
-              After (AI recommendation)
-              <audio id="after-audio" controls preload="none"></audio>
-            </label>
-          </div>
-        </details>
-      </section>
-
-      <section class="panel" id="step-3">
-        <div class="step-head">
-          <span class="step-no">Step 3</span>
-          <h2>Use it in real life</h2>
-          <p>Get a clear primary profile and a practical fallback.</p>
-        </div>
-
-        <div class="decision-grid">
-          <article id="winner-card" class="mini"></article>
-          <article id="confidence-card" class="mini"></article>
-          <article id="actions-card" class="mini"></article>
-        </div>
-
-        <details>
-          <summary>See full candidate utility table</summary>
-          <div class="table-wrap">
-            <table id="score-table"></table>
-          </div>
-        </details>
-      </section>
-
-      <section class="panel advanced">
-        <h2>Advanced safety and transparency</h2>
-        <p>For clinicians and technical review.</p>
-
-        <details>
-          <summary>Local feedback update and stability check</summary>
-
-          <div class="controls-row">
-            <label>
-              Scenario receiving feedback
-              <select id="feedback-scene-select"></select>
-            </label>
-            <label>
-              Preferred profile from feedback
-              <select id="feedback-profile-select"></select>
-            </label>
-            <button id="apply-feedback-btn" class="btn btn-primary">Apply local update</button>
-          </div>
-
-          <article id="feedback-summary" class="mini"></article>
-
-          <div class="split-table">
-            <div class="table-wrap">
-              <h3>Before update</h3>
-              <table id="feedback-before-table"></table>
+          <details>
+            <summary>Fine tune (optional)</summary>
+            <div class="sliders">
+              <label>
+                Speech clarity
+                <input id="clarity-slider" type="range" min="0" max="100" value="60" />
+                <span id="clarity-value">60</span>
+              </label>
+              <label>
+                Noise control
+                <input id="noise-slider" type="range" min="0" max="100" value="60" />
+                <span id="noise-value">60</span>
+              </label>
+              <label>
+                Comfort
+                <input id="comfort-slider" type="range" min="0" max="100" value="55" />
+                <span id="comfort-value">55</span>
+              </label>
             </div>
+          </details>
+
+          <div class="screen-actions">
+            <button id="to-step-2-btn" class="btn btn-primary">Hear my AI result</button>
+          </div>
+        </section>
+
+        <section id="screen-2" class="screen is-hidden">
+          <header class="screen-head">
+            <h2>Hear the difference</h2>
+            <p id="compare-caption">AI will compare the same voice moment before and after enhancement.</p>
+          </header>
+
+          <article id="winner-hero" class="winner-hero"></article>
+
+          <div class="listen-row">
+            <button id="play-before-btn" class="btn btn-soft" type="button">Play raw</button>
+            <button id="play-after-btn" class="btn btn-primary" type="button">Play AI enhanced</button>
+            <button id="play-ab-btn" class="btn btn-soft" type="button">Smart A/B</button>
+            <button id="stop-btn" class="btn btn-soft" type="button">Stop</button>
+          </div>
+
+          <div class="listen-status">
+            <span id="play-state" class="status">Idle</span>
+            <span>Smart A/B keeps the same timestamp so differences are clear.</span>
+          </div>
+
+          <div class="impact-grid">
+            <article id="impact-a" class="impact"></article>
+            <article id="impact-b" class="impact"></article>
+            <article id="impact-c" class="impact"></article>
+          </div>
+
+          <details>
+            <summary>Manual audio players</summary>
+            <div class="players">
+              <label>
+                Raw input
+                <audio id="before-audio" controls preload="none"></audio>
+              </label>
+              <label>
+                AI recommendation
+                <audio id="after-audio" controls preload="none"></audio>
+              </label>
+            </div>
+          </details>
+
+          <div class="screen-actions between">
+            <button id="back-to-1-btn" class="btn btn-soft" type="button">Back</button>
+            <button id="to-step-3-btn" class="btn btn-primary" type="button">See recommendation</button>
+          </div>
+        </section>
+
+        <section id="screen-3" class="screen is-hidden">
+          <header class="screen-head">
+            <h2>Your recommended setting</h2>
+            <p>Use this as your primary mode now, with one simple fallback.</p>
+          </header>
+
+          <div class="recommend-grid">
+            <article id="winner-card" class="card"></article>
+            <article id="confidence-card" class="card"></article>
+            <article id="action-card" class="card"></article>
+          </div>
+
+          <article id="saved-note" class="saved-note is-hidden"></article>
+
+          <div class="screen-actions between">
+            <button id="back-to-2-btn" class="btn btn-soft" type="button">Back</button>
+            <button id="save-setting-btn" class="btn btn-primary" type="button">Save this for this scene</button>
+          </div>
+
+          <details>
+            <summary>See full profile score table</summary>
             <div class="table-wrap">
-              <h3>After update</h3>
-              <table id="feedback-after-table"></table>
+              <table id="score-table"></table>
+            </div>
+          </details>
+        </section>
+      </section>
+
+      <section class="advanced">
+        <details>
+          <summary>Advanced safety and transparency</summary>
+
+          <div class="advanced-block">
+            <h3>Local feedback update</h3>
+            <div class="controls-row">
+              <label>
+                Target scene
+                <select id="feedback-scene-select"></select>
+              </label>
+              <label>
+                Preferred profile
+                <select id="feedback-profile-select"></select>
+              </label>
+              <button id="apply-feedback-btn" class="btn btn-primary" type="button">Apply local update</button>
+            </div>
+
+            <article id="feedback-summary" class="card"></article>
+
+            <div class="split-table">
+              <div class="table-wrap">
+                <h3>Before update</h3>
+                <table id="feedback-before-table"></table>
+              </div>
+              <div class="table-wrap">
+                <h3>After update</h3>
+                <table id="feedback-after-table"></table>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <h3>Non-target stability</h3>
+              <table id="stability-table"></table>
             </div>
           </div>
 
-          <div class="table-wrap">
-            <h3>Non-target stability</h3>
-            <table id="stability-table"></table>
+          <div class="advanced-block">
+            <h3>Method</h3>
+            <p>
+              Utility(scene, profile) = Σ weight(scene, feature) × feature(profile), using interpretable features
+              (intelligibility, noise control, comfort, loudness stability, speech prominence).
+            </p>
+            <p>
+              Feedback updates only the selected scene with bounded weight shifts and verifies unchanged behavior in non-target scenes.
+            </p>
           </div>
-        </details>
-
-        <details>
-          <summary>Method</summary>
-          <p>
-            Utility(scene, profile) = Σ weight(scene, feature) × feature(profile). Features: intelligibility,
-            noise control, comfort, loudness stability, speech prominence.
-          </p>
-          <p>
-            Feedback updates only the selected scene with bounded weight shifts, while stability checks confirm non-target behavior remains unchanged.
-          </p>
         </details>
       </section>
     </main>

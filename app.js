@@ -18,15 +18,24 @@ const DEFAULT_SCENE = "crowd_social";
 const DEFAULT_GOAL = "Hear speech clearly in noise";
 const DEFAULT_FEEDBACK_SCENE = "meeting_room";
 const DEFAULT_FEEDBACK_PROFILE = "comfort_softness";
-const AB_TOGGLE_MS = 1100;
+const AB_TOGGLE_MS = 1050;
+const SAVED_KEY = "sonova_saved_scene_profiles";
 
 const els = {
-  startCheckBtn: document.getElementById("start-check-btn"),
-  currentScenePill: document.getElementById("current-scene-pill"),
+  heroStartBtn: document.getElementById("hero-start-btn"),
+  stepBtns: {
+    1: document.getElementById("step-btn-1"),
+    2: document.getElementById("step-btn-2"),
+    3: document.getElementById("step-btn-3"),
+  },
+  screens: {
+    1: document.getElementById("screen-1"),
+    2: document.getElementById("screen-2"),
+    3: document.getElementById("screen-3"),
+  },
 
   sceneCards: document.getElementById("scene-cards"),
-  goalSelect: document.getElementById("goal-select"),
-  applyGoalBtn: document.getElementById("apply-goal-btn"),
+  goalChips: document.getElementById("goal-chips"),
   goalCoach: document.getElementById("goal-coach"),
 
   clarity: document.getElementById("clarity-slider"),
@@ -36,10 +45,13 @@ const els = {
   noiseValue: document.getElementById("noise-value"),
   comfortValue: document.getElementById("comfort-value"),
 
-  runBtn: document.getElementById("run-btn"),
+  toStep2Btn: document.getElementById("to-step-2-btn"),
+  backTo1Btn: document.getElementById("back-to-1-btn"),
+  toStep3Btn: document.getElementById("to-step-3-btn"),
+  backTo2Btn: document.getElementById("back-to-2-btn"),
 
-  compareSubtitle: document.getElementById("compare-subtitle"),
-  winnerHighlight: document.getElementById("winner-highlight"),
+  compareCaption: document.getElementById("compare-caption"),
+  winnerHero: document.getElementById("winner-hero"),
   playBeforeBtn: document.getElementById("play-before-btn"),
   playAfterBtn: document.getElementById("play-after-btn"),
   playABBtn: document.getElementById("play-ab-btn"),
@@ -47,14 +59,17 @@ const els = {
   playState: document.getElementById("play-state"),
   beforeAudio: document.getElementById("before-audio"),
   afterAudio: document.getElementById("after-audio"),
-  impact1: document.getElementById("impact-1"),
-  impact2: document.getElementById("impact-2"),
-  impact3: document.getElementById("impact-3"),
+
+  impactA: document.getElementById("impact-a"),
+  impactB: document.getElementById("impact-b"),
+  impactC: document.getElementById("impact-c"),
 
   winnerCard: document.getElementById("winner-card"),
   confidenceCard: document.getElementById("confidence-card"),
-  actionsCard: document.getElementById("actions-card"),
+  actionCard: document.getElementById("action-card"),
   scoreTable: document.getElementById("score-table"),
+  saveSettingBtn: document.getElementById("save-setting-btn"),
+  savedNote: document.getElementById("saved-note"),
 
   feedbackSceneSelect: document.getElementById("feedback-scene-select"),
   feedbackProfileSelect: document.getElementById("feedback-profile-select"),
@@ -71,7 +86,10 @@ const state = {
   profileMap: {},
   featuresByScene: {},
   selectedSceneId: null,
+  selectedGoal: DEFAULT_GOAL,
+  currentStep: 1,
   lastWeightsCfg: null,
+  lastWinner: null,
   abTimer: null,
   abNext: "before",
 };
@@ -175,7 +193,7 @@ function scoreAllScenes(weightsCfg) {
 }
 
 function decisionConfidence(margin) {
-  const pct = Math.max(55, Math.min(97, Math.round(56 + 720 * margin)));
+  const pct = Math.max(55, Math.min(97, Math.round(56 + 700 * margin)));
   if (margin >= 0.045) {
     return { level: "High", pct };
   }
@@ -202,8 +220,16 @@ function tableHtml(columns, rows) {
   return `<thead>${head}</thead><tbody>${body}</tbody>`;
 }
 
+function setStep(step) {
+  state.currentStep = step;
+  for (const id of [1, 2, 3]) {
+    els.screens[id].classList.toggle("is-hidden", id !== step);
+    els.stepBtns[id].classList.toggle("is-active", id === step);
+  }
+}
+
 function setPlayState(text, tone = "neutral") {
-  els.playState.className = `status-badge${tone === "good" ? " good" : tone === "warn" ? " warn" : ""}`;
+  els.playState.className = `status${tone === "good" ? " good" : tone === "warn" ? " warn" : ""}`;
   els.playState.textContent = text;
 }
 
@@ -219,10 +245,7 @@ function renderSceneCards() {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = `scene-card${scene.id === state.selectedSceneId ? " is-active" : ""}`;
-    btn.innerHTML = `
-      <span class="name">${scene.label}</span>
-      <span class="desc">${scene.description}</span>
-    `;
+    btn.innerHTML = `<span class="name">${scene.label}</span><span class="desc">${scene.description}</span>`;
     btn.addEventListener("click", () => {
       if (state.selectedSceneId === scene.id) {
         return;
@@ -230,30 +253,40 @@ function renderSceneCards() {
       state.selectedSceneId = scene.id;
       renderSceneCards();
       runRecommendation(false);
+      renderSavedState();
     });
     els.sceneCards.appendChild(btn);
   }
-  const scene = state.sceneMap[state.selectedSceneId];
-  els.currentScenePill.textContent = `Scene: ${scene.label}`;
 }
 
-function renderGoalCoach(goalLabel) {
-  const preset = state.bundle.goal_presets[goalLabel];
+function renderGoalChips() {
+  els.goalChips.innerHTML = "";
+  for (const label of Object.keys(state.bundle.goal_presets)) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `goal-chip${label === state.selectedGoal ? " is-active" : ""}`;
+    btn.textContent = label;
+    btn.addEventListener("click", () => {
+      state.selectedGoal = label;
+      applyGoalPreset(label);
+      renderGoalChips();
+      runRecommendation(false);
+    });
+    els.goalChips.appendChild(btn);
+  }
+}
+
+function applyGoalPreset(goalLabel) {
+  const preset = state.bundle.goal_presets[goalLabel] || state.bundle.goal_presets[DEFAULT_GOAL];
+  els.clarity.value = String(preset.clarity);
+  els.noise.value = String(preset.noise);
+  els.comfort.value = String(preset.comfort);
+  updateSliderLabels();
   els.goalCoach.innerHTML = `
     <h3>Current goal</h3>
     <p><b>${goalLabel}</b></p>
     <p>${preset.coach_text}</p>
   `;
-}
-
-function applyGoalPreset() {
-  const goal = els.goalSelect.value;
-  const preset = state.bundle.goal_presets[goal] || state.bundle.goal_presets[DEFAULT_GOAL];
-  els.clarity.value = String(preset.clarity);
-  els.noise.value = String(preset.noise);
-  els.comfort.value = String(preset.comfort);
-  updateSliderLabels();
-  renderGoalCoach(goal);
 }
 
 function stopAudio() {
@@ -280,8 +313,8 @@ async function playSingle(which) {
   stopAudio();
   const src = which === "before" ? els.beforeAudio : els.afterAudio;
   const other = which === "before" ? els.afterAudio : els.beforeAudio;
-
   other.pause();
+
   try {
     src.currentTime = Math.min(currentSyncTime(), Math.max(0, (src.duration || 0.1) - 0.05));
   } catch {
@@ -328,53 +361,13 @@ function startAB() {
   state.abTimer = setInterval(abStep, AB_TOGGLE_MS);
 }
 
-function renderImpactCard(el, title, valueText, note, tone = "good") {
+function renderImpactCard(el, label, value, hint, tone = "good") {
   el.className = `impact ${tone}`;
   el.innerHTML = `
-    <span class="title">${title}</span>
-    <span class="value">${valueText}</span>
-    <span class="note">${note}</span>
+    <span class="label">${label}</span>
+    <span class="value">${value}</span>
+    <span class="hint">${hint}</span>
   `;
-}
-
-function renderImpact(sceneId, winner, margin) {
-  const metrics = state.bundle.audio_metrics?.[sceneId]?.[winner.profile_id] || {
-    noise_floor_drop_db: 0,
-    speech_band_shift_db: 0,
-    speech_focus_delta_pct: 0,
-  };
-
-  const floor = Number(metrics.noise_floor_drop_db);
-  const speech = Number(metrics.speech_band_shift_db);
-  const focus = Number(metrics.speech_focus_delta_pct);
-
-  renderImpactCard(
-    els.impact1,
-    floor >= 0 ? "Background reduced" : "Ambience retained",
-    `${fmtSigned(floor, 1)} dB`,
-    floor >= 0 ? "Lower background floor after AI." : "AI kept environmental ambience.",
-    floor >= 0 ? "good" : "warn",
-  );
-
-  renderImpactCard(
-    els.impact2,
-    "Speech presence",
-    `${fmtSigned(speech, 1)} dB`,
-    "Change in speech-critical band energy.",
-    speech >= 0 ? "good" : "warn",
-  );
-
-  renderImpactCard(
-    els.impact3,
-    "Decision margin",
-    fmt(margin),
-    `Higher margin means more confident winner for this scene.`,
-    margin >= 0.02 ? "good" : "warn",
-  );
-
-  if (Math.abs(focus) > 0.5) {
-    els.impact3.querySelector(".note").textContent += ` Focus shift: ${fmtSigned(focus, 1)} pts.`;
-  }
 }
 
 function renderScoreTable(scored) {
@@ -387,70 +380,133 @@ function renderScoreTable(scored) {
   els.scoreTable.innerHTML = tableHtml(columns, scored);
 }
 
-function runRecommendation(scrollToCompare) {
+function runRecommendation(scrollToStep2) {
   const scene = state.sceneMap[state.selectedSceneId];
-  const goalLabel = els.goalSelect.value;
 
   const weightsCfg = personalizedWeightsConfig(els.clarity.value, els.noise.value, els.comfort.value);
   const { scored, weights } = scoreScene(scene.id, weightsCfg);
-
   const winner = scored[0];
   const runner = scored[1];
   const margin = winner.score - runner.score;
   const conf = decisionConfidence(margin);
 
+  state.lastWeightsCfg = weightsCfg;
+  state.lastWinner = winner;
+
   stopAudio();
   els.beforeAudio.src = scene.audio.noisy;
   els.afterAudio.src = winner.audio_path;
 
-  const topEvidence = topContributions(winner.contributions, 2)
+  const top = topContributions(winner.contributions, 2)
     .map(([f]) => FEATURE_LABELS[f])
     .join(" + ");
 
-  const weightFocus = Object.entries(weights)
+  const focus = Object.entries(weights)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
     .map(([f, w]) => `${FEATURE_LABELS[f]} (${fmt(w, 2)})`)
     .join(", ");
 
-  els.compareSubtitle.textContent = `In ${scene.label}, AI selected ${winner.profile_name}. Use Smart A/B compare to hear raw vs enhanced at the same moment.`;
-
-  els.winnerHighlight.innerHTML = `
-    <h3>AI selected: ${winner.profile_name}</h3>
+  els.compareCaption.textContent = `Scene: ${scene.label}. Smart A/B compares the same moment before vs AI enhancement.`;
+  els.winnerHero.innerHTML = `
+    <h3>AI selected ${winner.profile_name}</h3>
     <p>${winner.profile_description}</p>
   `;
 
+  const metrics = state.bundle.audio_metrics?.[scene.id]?.[winner.profile_id] || {
+    noise_floor_drop_db: 0,
+    speech_band_shift_db: 0,
+    speech_focus_delta_pct: 0,
+  };
+
+  const floor = Number(metrics.noise_floor_drop_db);
+  const speech = Number(metrics.speech_band_shift_db);
+  const focusShift = Number(metrics.speech_focus_delta_pct);
+
+  renderImpactCard(
+    els.impactA,
+    floor >= 0 ? "Background reduction" : "Ambience retained",
+    `${fmtSigned(floor, 1)} dB`,
+    floor >= 0 ? "Lower background floor after AI." : "Natural ambience kept.",
+    floor >= 0 ? "good" : "warn",
+  );
+
+  renderImpactCard(
+    els.impactB,
+    "Speech presence",
+    `${fmtSigned(speech, 1)} dB`,
+    "Change in speech-focused band energy.",
+    speech >= 0 ? "good" : "warn",
+  );
+
+  renderImpactCard(
+    els.impactC,
+    "Decision confidence",
+    `${conf.pct}%`,
+    `Score margin ${fmt(margin)} · focus shift ${fmtSigned(focusShift, 1)} pts.`,
+    conf.level === "High" || conf.level === "Moderate" ? "good" : "warn",
+  );
+
   els.winnerCard.innerHTML = `
-    <h3>Use this now</h3>
-    <p><b>${winner.profile_name}</b> for <b>${scene.label}</b></p>
-    <p>Backup option: <b>${runner.profile_name}</b></p>
-    <p>Goal fit: <b>${goalLabel}</b></p>
+    <h3>Primary setting</h3>
+    <p><b>${winner.profile_name}</b></p>
+    <p>For <b>${scene.label}</b></p>
+    <p>Goal matched: <b>${state.selectedGoal}</b></p>
   `;
 
   els.confidenceCard.innerHTML = `
-    <h3>Why this was chosen</h3>
-    <p>Top evidence: <b>${topEvidence}</b></p>
-    <p>Scene weighting priority: ${weightFocus}</p>
-    <p>Confidence: <b>${conf.level}</b> (${conf.pct}%)</p>
+    <h3>Why this wins</h3>
+    <p>Top evidence: <b>${top}</b></p>
+    <p>Scene weighting priority: ${focus}</p>
+    <p>Backup profile: <b>${runner.profile_name}</b></p>
   `;
 
-  els.actionsCard.innerHTML = `
-    <h3>Do this next</h3>
-    <p>1. Tap <b>Smart A/B compare</b>.</p>
-    <p>2. If this sounds too strong, switch to <b>${runner.profile_name}</b>.</p>
-    <p>3. Keep this profile as your default for ${scene.label.toLowerCase()}.</p>
+  els.actionCard.innerHTML = `
+    <h3>How to use it</h3>
+    <p>1. Use <b>${winner.profile_name}</b> in this scene.</p>
+    <p>2. If it feels too strong, switch to <b>${runner.profile_name}</b>.</p>
+    <p>3. Save this for faster switching next time.</p>
   `;
 
-  renderImpact(scene.id, winner, margin);
   renderScoreTable(scored);
 
-  state.lastWeightsCfg = weightsCfg;
-
-  if (scrollToCompare) {
-    document.getElementById("step-2")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (scrollToStep2) {
+    setStep(2);
   }
+}
 
-  return { weightsCfg, scoredByScene: scoreAllScenes(weightsCfg) };
+function getSavedMap() {
+  try {
+    return JSON.parse(localStorage.getItem(SAVED_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveCurrentSceneSetting() {
+  if (!state.lastWinner || !state.selectedSceneId) {
+    return;
+  }
+  const scene = state.sceneMap[state.selectedSceneId];
+  const saved = getSavedMap();
+  saved[state.selectedSceneId] = {
+    profile_id: state.lastWinner.profile_id,
+    profile_name: state.lastWinner.profile_name,
+    scene_label: scene.label,
+    ts: new Date().toISOString(),
+  };
+  localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+  renderSavedState();
+}
+
+function renderSavedState() {
+  const saved = getSavedMap()[state.selectedSceneId];
+  if (!saved) {
+    els.savedNote.classList.add("is-hidden");
+    return;
+  }
+  els.savedNote.classList.remove("is-hidden");
+  els.savedNote.innerHTML = `<b>Saved:</b> ${saved.profile_name} for ${saved.scene_label}`;
 }
 
 function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
@@ -487,24 +543,17 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
   const sceneAfter = [...scoresAfter[targetScene]];
 
   let maxNonTargetShift = 0;
-  let preserved = 0;
-  let nonTargetCount = 0;
   const stabilityRows = [];
 
   for (const scene of state.bundle.scenes) {
     if (scene.id === targetScene) {
       continue;
     }
-
-    nonTargetCount += 1;
     const beforeRows = scoresBefore[scene.id];
     const afterRows = scoresAfter[scene.id];
 
     const beforeWinner = beforeRows[0].profile_id;
     const afterWinner = afterRows[0].profile_id;
-    if (beforeWinner === afterWinner) {
-      preserved += 1;
-    }
 
     let localMax = 0;
     for (const b of beforeRows) {
@@ -524,13 +573,11 @@ function applyLocalPreferenceUpdate(weightsCfg, targetScene, preferredProfile) {
   }
 
   return {
-    updatedCfg,
     diagnostics: {
       winner_before: sceneBefore[0].profile_id,
       winner_after: sceneAfter[0].profile_id,
       max_non_target_abs_score_shift: maxNonTargetShift,
       threshold: Number(rule.non_target_max_abs_score_shift_threshold),
-      non_target_winner_preservation_fraction: nonTargetCount > 0 ? preserved / nonTargetCount : 1,
     },
     sceneBefore,
     sceneAfter,
@@ -568,9 +615,9 @@ function renderFeedback() {
   const stable = update.diagnostics.max_non_target_abs_score_shift <= update.diagnostics.threshold;
 
   els.feedbackSummary.innerHTML = `
-    <h3>Feedback update result</h3>
+    <h3>Update result</h3>
     <p>Target scene: <b>${state.sceneMap[targetScene].label}</b></p>
-    <p>Requested profile: <b>${state.profileMap[preferredProfile].name}</b></p>
+    <p>Preferred profile: <b>${state.profileMap[preferredProfile].name}</b></p>
     <p>Winner: <b>${beforeWinner}</b> → <b>${afterWinner}</b> (${changed ? "changed" : "unchanged"})</p>
     <p>Non-target drift: <b>${fmt(update.diagnostics.max_non_target_abs_score_shift, 5)}</b> / threshold ${fmt(update.diagnostics.threshold, 5)} (${stable ? "PASS" : "FAIL"})</p>
   `;
@@ -591,24 +638,19 @@ function initControls() {
     els.feedbackProfileSelect.appendChild(option);
   }
 
-  for (const goalLabel of Object.keys(state.bundle.goal_presets)) {
-    const option = document.createElement("option");
-    option.value = goalLabel;
-    option.textContent = goalLabel;
-    els.goalSelect.appendChild(option);
-  }
-
   const sceneIds = new Set(state.bundle.scenes.map((s) => s.id));
   state.selectedSceneId = sceneIds.has(DEFAULT_SCENE) ? DEFAULT_SCENE : state.bundle.scenes[0].id;
-
-  els.goalSelect.value = Object.prototype.hasOwnProperty.call(state.bundle.goal_presets, DEFAULT_GOAL)
-    ? DEFAULT_GOAL
-    : Object.keys(state.bundle.goal_presets)[0];
+  if (!state.bundle.goal_presets[state.selectedGoal]) {
+    state.selectedGoal = Object.keys(state.bundle.goal_presets)[0];
+  }
 
   els.feedbackSceneSelect.value = sceneIds.has(DEFAULT_FEEDBACK_SCENE) ? DEFAULT_FEEDBACK_SCENE : state.selectedSceneId;
   els.feedbackProfileSelect.value = DEFAULT_FEEDBACK_PROFILE;
 
+  applyGoalPreset(state.selectedGoal);
   renderSceneCards();
+  renderGoalChips();
+  renderSavedState();
 }
 
 async function loadBundle() {
@@ -637,42 +679,51 @@ async function init() {
   try {
     await loadBundle();
     initControls();
-    applyGoalPreset();
+    setStep(1);
 
     for (const slider of [els.clarity, els.noise, els.comfort]) {
-      slider.addEventListener("input", updateSliderLabels);
+      slider.addEventListener("input", () => {
+        updateSliderLabels();
+        runRecommendation(false);
+      });
     }
 
-    els.applyGoalBtn.addEventListener("click", () => {
-      applyGoalPreset();
-      runRecommendation(false);
-      renderFeedback();
-    });
-
-    els.runBtn.addEventListener("click", () => {
-      runRecommendation(true);
-      renderFeedback();
-    });
-
-    els.startCheckBtn.addEventListener("click", () => {
+    els.heroStartBtn.addEventListener("click", () => {
       runRecommendation(true);
       startAB();
       renderFeedback();
     });
+
+    els.toStep2Btn.addEventListener("click", () => {
+      runRecommendation(true);
+      renderFeedback();
+    });
+
+    els.toStep3Btn.addEventListener("click", () => {
+      setStep(3);
+      renderSavedState();
+    });
+
+    els.backTo1Btn.addEventListener("click", () => setStep(1));
+    els.backTo2Btn.addEventListener("click", () => setStep(2));
+
+    els.stepBtns[1].addEventListener("click", () => setStep(1));
+    els.stepBtns[2].addEventListener("click", () => setStep(2));
+    els.stepBtns[3].addEventListener("click", () => setStep(3));
 
     els.playBeforeBtn.addEventListener("click", () => playSingle("before"));
     els.playAfterBtn.addEventListener("click", () => playSingle("after"));
     els.playABBtn.addEventListener("click", () => startAB());
     els.stopBtn.addEventListener("click", () => stopAudio());
 
-    els.applyFeedbackBtn.addEventListener("click", () => {
-      renderFeedback();
-    });
+    els.saveSettingBtn.addEventListener("click", () => saveCurrentSceneSetting());
+
+    els.applyFeedbackBtn.addEventListener("click", () => renderFeedback());
 
     runRecommendation(false);
     renderFeedback();
   } catch (error) {
-    document.body.innerHTML = `<main class="app-shell"><section class="panel"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
+    document.body.innerHTML = `<main class="shell"><section class="hero"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
   }
 }
 

@@ -22,14 +22,12 @@ const AB_TOGGLE_MS = 1050;
 const SAVED_KEY = "sonova_saved_scene_profiles";
 
 const els = {
-  launchBtn: document.getElementById("launch-btn"),
-  playABHeroBtn: document.getElementById("play-ab-hero-btn"),
+  startBtn: document.getElementById("start-btn"),
 
   heroProfile: document.getElementById("hero-profile"),
   heroScene: document.getElementById("hero-scene"),
-  signalBars: document.getElementById("signal-bars"),
 
-  scenePills: document.getElementById("scene-pills"),
+  sceneChips: document.getElementById("scene-chips"),
   prioritySlider: document.getElementById("priority-slider"),
   priorityValue: document.getElementById("priority-value"),
 
@@ -44,16 +42,15 @@ const els = {
   playState: document.getElementById("play-state"),
   stateCopy: document.getElementById("state-copy"),
 
+  signalBars: document.getElementById("signal-bars"),
+  rawAudio: document.getElementById("raw-audio"),
+  aiAudio: document.getElementById("ai-audio"),
+
   metricNoise: document.getElementById("metric-noise"),
   metricSpeech: document.getElementById("metric-speech"),
   metricConfidence: document.getElementById("metric-confidence"),
 
-  rawAudio: document.getElementById("raw-audio"),
-  aiAudio: document.getElementById("ai-audio"),
-
-  recommendPrimary: document.getElementById("recommend-primary"),
-  recommendWhy: document.getElementById("recommend-why"),
-  recommendHow: document.getElementById("recommend-how"),
+  recommendBrief: document.getElementById("recommend-brief"),
   saveSceneBtn: document.getElementById("save-scene-btn"),
   savedBadge: document.getElementById("saved-badge"),
 
@@ -291,13 +288,13 @@ function startAB() {
   state.abTimer = setInterval(abStep, AB_TOGGLE_MS);
 }
 
-function renderScenePills() {
-  els.scenePills.innerHTML = "";
+function renderSceneChips() {
+  els.sceneChips.innerHTML = "";
 
   for (const scene of state.bundle.scenes) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `scene-pill${scene.id === state.selectedSceneId ? " is-active" : ""}`;
+    button.className = `scene-chip${scene.id === state.selectedSceneId ? " is-active" : ""}`;
     button.textContent = scene.label;
 
     button.addEventListener("click", () => {
@@ -305,12 +302,12 @@ function renderScenePills() {
         return;
       }
       state.selectedSceneId = scene.id;
-      renderScenePills();
-      runRecommendation();
+      renderSceneChips();
+      runRecommendation(false);
       renderSavedState();
     });
 
-    els.scenePills.appendChild(button);
+    els.sceneChips.appendChild(button);
   }
 }
 
@@ -334,7 +331,7 @@ function renderScoreTable(scored) {
   els.scoreTable.innerHTML = tableHtml(columns, scored);
 }
 
-function runRecommendation() {
+function runRecommendation(autoAB = false) {
   const scene = state.sceneMap[state.selectedSceneId];
   const priority = Number(els.prioritySlider.value);
 
@@ -403,30 +400,24 @@ function runRecommendation() {
     .map(([feature, weight]) => `${FEATURE_LABELS[feature]} (${fmt(weight, 2)})`)
     .join(", ");
 
-  els.recommendPrimary.innerHTML = `
-    <h3>${winner.profile_name}</h3>
+  els.recommendBrief.innerHTML = `
+    <h4>${winner.profile_name}</h4>
     <p>Best fit for <b>${scene.label}</b>.</p>
-  `;
-
-  els.recommendWhy.innerHTML = `
-    <h3>Why this wins</h3>
     <p>Top evidence: <b>${top}</b>.</p>
-    <p>Scene priorities: ${focus}.</p>
-  `;
-
-  els.recommendHow.innerHTML = `
-    <h3>How to use</h3>
-    <p>Primary: <b>${winner.profile_name}</b>. Fallback: <b>${runner.profile_name}</b>.</p>
-    <p>${conf.pct}% confidence in this scene.</p>
+    <p>Fallback: <b>${runner.profile_name}</b>. Focus: ${focus}.</p>
   `;
 
   els.stateCopy.textContent =
     conf.level === "Needs listening check"
       ? "Close scores. Use Smart A/B before saving."
-      : "Smart A/B locks to one timestamp so the difference is obvious.";
+      : "Smart A/B keeps the same timestamp so the difference is obvious.";
 
   renderScoreTable(scored);
   renderFeedback();
+
+  if (autoAB) {
+    startAB();
+  }
 }
 
 function getSavedMap() {
@@ -636,21 +627,14 @@ async function loadBundle() {
 }
 
 function wireEvents() {
-  els.launchBtn.addEventListener("click", () => {
-    runRecommendation();
-    startAB();
-    document.getElementById("live-demo").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  els.playABHeroBtn.addEventListener("click", () => {
-    runRecommendation();
-    startAB();
-    document.getElementById("live-demo").scrollIntoView({ behavior: "smooth", block: "start" });
+  els.startBtn.addEventListener("click", () => {
+    runRecommendation(true);
+    document.getElementById("experience").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   els.prioritySlider.addEventListener("input", () => {
     els.priorityValue.textContent = String(els.prioritySlider.value);
-    runRecommendation();
+    runRecommendation(false);
   });
 
   els.playRawBtn.addEventListener("click", () => playSingle("raw"));
@@ -675,14 +659,14 @@ async function init() {
     els.prioritySlider.value = String(DEFAULT_PRIORITY);
     els.priorityValue.textContent = String(DEFAULT_PRIORITY);
 
-    renderScenePills();
+    renderSceneChips();
     initFeedbackControls();
     wireEvents();
 
-    runRecommendation();
+    runRecommendation(false);
     renderSavedState();
   } catch (error) {
-    document.body.innerHTML = `<main class="wrap"><section class="card" style="padding: 16px;"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
+    document.body.innerHTML = `<main class="site"><section class="card" style="padding:16px;"><h2>Failed to load demo</h2><p>${String(error)}</p></section></main>`;
   }
 }
 

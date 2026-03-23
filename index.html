@@ -3,127 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sonova Intelligence</title>
+    <title>Sonova Aura</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="bg"></div>
+    <div class="ambient" aria-hidden="true"></div>
 
-    <main class="wrap">
-      <header class="hero">
-        <div class="brand-row">
+    <main class="site">
+      <header class="topbar">
+        <div class="brand">
           <span class="brand-dot"></span>
-          <span class="brand-text">Sonova Intelligence</span>
+          <span>Sonova Aura</span>
         </div>
-
-        <div class="hero-grid">
-          <div>
-            <p class="eyebrow">Minimal enterprise demo</p>
-            <h1>Hear speech clearly in your exact scene.</h1>
-            <p class="sub">
-              Real voice clips. Scene-aware profile selection. One recommendation you can trust immediately.
-            </p>
-            <div class="hero-actions">
-              <button id="launch-btn" class="btn btn-primary" type="button">Start Live Demo</button>
-              <button id="play-ab-hero-btn" class="btn btn-soft" type="button">Instant A/B</button>
-            </div>
-          </div>
-
-          <aside class="hero-signal" aria-live="polite">
-            <p class="signal-label">Current recommendation</p>
-            <h2 id="hero-profile">Balanced Default</h2>
-            <p id="hero-scene">for Crowd / Social Gathering</p>
-            <div id="signal-bars" class="signal-bars" aria-hidden="true">
-              <span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-          </aside>
-        </div>
+        <button id="start-btn" class="btn btn-primary" type="button">Start Listening</button>
       </header>
 
-      <section id="live-demo" class="card demo">
-        <div class="controls-top">
-          <div>
-            <p class="section-kicker">Choose your listening moment</p>
-            <div id="scene-pills" class="scene-pills"></div>
-          </div>
+      <section class="hero">
+        <p class="eyebrow">Minimal premium demo</p>
+        <h1>Your hearing, tuned live to this exact moment.</h1>
+        <p class="sub">Real voices, scene-aware AI, and one clear recommendation you can trust.</p>
+      </section>
 
-          <label class="pref" for="priority-slider">
-            Preference
-            <input id="priority-slider" type="range" min="0" max="100" value="62" />
-            <div class="pref-scale">
-              <span>Comfort</span>
-              <strong id="priority-value">62</strong>
-              <span>Clarity</span>
-            </div>
-          </label>
+      <section id="experience" class="experience card">
+        <div class="scene-row">
+          <span class="scene-label">Scene</span>
+          <div id="scene-chips" class="scene-chips"></div>
         </div>
 
-        <article class="card compare">
-          <div class="compare-head">
-            <div>
-              <p id="scene-caption" class="scene-caption">Scene: Crowd / Social Gathering</p>
-              <h3 id="winner-name">AI selected profile</h3>
-              <p id="winner-desc" class="winner-desc">Profile description</p>
+        <div class="stage-grid">
+          <article class="listen card-soft">
+            <p id="scene-caption" class="scene-caption">Scene: Crowd / Social Gathering</p>
+            <h2 id="winner-name">AI selected profile</h2>
+            <p id="winner-desc" class="winner-desc">Profile description</p>
+
+            <div class="listen-controls">
+              <button id="play-raw-btn" class="btn btn-soft" type="button">Play Raw</button>
+              <button id="play-ai-btn" class="btn btn-primary" type="button">Play AI</button>
+              <button id="play-ab-btn" class="btn btn-soft" type="button">Smart A/B</button>
+              <button id="stop-btn" class="btn btn-soft" type="button">Stop</button>
             </div>
-            <span id="play-state" class="status">Idle</span>
-          </div>
 
-          <div class="listen-controls">
-            <button id="play-raw-btn" class="btn btn-soft" type="button">Play Raw</button>
-            <button id="play-ai-btn" class="btn btn-primary" type="button">Play AI</button>
-            <button id="play-ab-btn" class="btn btn-soft" type="button">Smart A/B</button>
-            <button id="stop-btn" class="btn btn-soft" type="button">Stop</button>
-          </div>
-
-          <p id="state-copy" class="state-copy">Smart A/B locks to one timestamp so the difference is obvious.</p>
-
-          <div class="metrics">
-            <article id="metric-noise" class="metric"></article>
-            <article id="metric-speech" class="metric"></article>
-            <article id="metric-confidence" class="metric"></article>
-          </div>
-
-          <details class="manual-audio">
-            <summary>Manual players</summary>
-            <div class="manual-grid">
-              <label>
-                Raw
-                <audio id="raw-audio" controls preload="none"></audio>
-              </label>
-              <label>
-                AI
-                <audio id="ai-audio" controls preload="none"></audio>
-              </label>
+            <div class="status-row">
+              <span id="play-state" class="status">Idle</span>
+              <span id="state-copy">Smart A/B keeps the same timestamp so the difference is obvious.</span>
             </div>
-          </details>
-        </article>
 
-        <article class="card recommendation">
-          <div id="recommend-primary" class="rec-block"></div>
-          <div id="recommend-why" class="rec-block"></div>
-          <div id="recommend-how" class="rec-block"></div>
+            <div id="signal-bars" class="signal-bars" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
 
-          <div class="recommend-actions">
+            <div class="metrics">
+              <article id="metric-noise" class="metric"></article>
+              <article id="metric-speech" class="metric"></article>
+              <article id="metric-confidence" class="metric"></article>
+            </div>
+
+            <details class="manual">
+              <summary>Manual players</summary>
+              <div class="manual-grid">
+                <label>
+                  Raw
+                  <audio id="raw-audio" controls preload="none"></audio>
+                </label>
+                <label>
+                  AI
+                  <audio id="ai-audio" controls preload="none"></audio>
+                </label>
+              </div>
+            </details>
+          </article>
+
+          <aside class="decision card-soft">
+            <p class="decision-kicker">Recommended mode</p>
+            <h3 id="hero-profile">Balanced Default</h3>
+            <p id="hero-scene">for Crowd / Social Gathering</p>
+
+            <label class="priority" for="priority-slider">
+              Preference
+              <input id="priority-slider" type="range" min="0" max="100" value="62" />
+              <div class="priority-scale">
+                <span>Comfort</span>
+                <strong id="priority-value">62</strong>
+                <span>Clarity</span>
+              </div>
+            </label>
+
+            <article id="recommend-brief" class="brief"></article>
+
             <button id="save-scene-btn" class="btn btn-primary" type="button">Save For This Scene</button>
             <p id="saved-badge" class="saved-badge is-hidden"></p>
-          </div>
-        </article>
+          </aside>
+        </div>
 
         <details class="scores">
-          <summary>Full utility score table</summary>
+          <summary>Utility score table</summary>
           <div class="table-wrap">
             <table id="score-table"></table>
           </div>
         </details>
       </section>
 
-      <section class="card proof">
+      <section class="proof card">
         <details>
           <summary>Local feedback update proof</summary>
 
@@ -136,26 +122,28 @@
               Preferred profile
               <select id="feedback-profile-select"></select>
             </label>
-            <button id="apply-feedback-btn" class="btn btn-primary" type="button">Apply Local Update</button>
+            <button id="apply-feedback-btn" class="btn btn-primary" type="button">Apply Update</button>
           </div>
 
           <article id="feedback-summary" class="feedback-summary"></article>
 
-          <div class="proof-tables">
-            <div class="table-wrap">
-              <h3>Before</h3>
-              <table id="feedback-before-table"></table>
+          <details>
+            <summary>Show before/after tables</summary>
+            <div class="proof-tables">
+              <div class="table-wrap">
+                <h3>Before</h3>
+                <table id="feedback-before-table"></table>
+              </div>
+              <div class="table-wrap">
+                <h3>After</h3>
+                <table id="feedback-after-table"></table>
+              </div>
             </div>
             <div class="table-wrap">
-              <h3>After</h3>
-              <table id="feedback-after-table"></table>
+              <h3>Non-target stability</h3>
+              <table id="stability-table"></table>
             </div>
-          </div>
-
-          <div class="table-wrap">
-            <h3>Non-target stability</h3>
-            <table id="stability-table"></table>
-          </div>
+          </details>
         </details>
       </section>
     </main>
